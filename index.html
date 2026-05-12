@@ -3,912 +3,625 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>+MARKA · Tablero de Activaciones</title>
+<title>+MARKA · Tablero</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --rojo:#C8102E;--oscuro:#1a1a2e;--blanco:#ffffff;
-  --gris1:#f4f5f7;--gris2:#e8eaed;--gris3:#9aa0a6;--gris4:#5f6368;
-  --verde:#1e7e34;--azul:#1a73e8;--amarillo:#f59e0b;
-  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.07);
+  --r:#C8102E;--r2:#e8192e;--n:#0d0f1a;--n2:#161829;--n3:#1e2035;
+  --w:#fff;--g1:#f0f1f5;--g2:#e2e4ec;--g3:#9196ab;--g4:#5a5f7a;
+  --grn:#10b981;--blu:#3b82f6;--amb:#f59e0b;
+  --rad:12px;--rad2:8px;--sh:0 4px 24px rgba(0,0,0,.06);--sh2:0 8px 40px rgba(0,0,0,.10);
 }
-body{font-family:'Segoe UI',Arial,sans-serif;background:#f1f3f4;color:#202124;min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:#f5f6fa;color:#1a1c2e;min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--g2);border-radius:10px}
 
-/* ── HEADER ── */
-.header{background:var(--oscuro);padding:0 24px;height:58px;display:flex;
-  align-items:center;gap:14px;position:sticky;top:0;z-index:200;
-  box-shadow:0 2px 12px rgba(0,0,0,.4);}
-.logo{display:flex;align-items:center;gap:0}
-.logo-plus{background:var(--rojo);color:#fff;font-weight:900;font-size:13px;
-  padding:5px 9px 5px 11px;border-radius:6px 0 0 6px;letter-spacing:.3px}
-.logo-marka{background:rgba(255,255,255,.08);color:#fff;font-weight:900;font-size:13px;
-  padding:5px 11px 5px 9px;border-radius:0 6px 6px 0;letter-spacing:.3px}
-.header-title{color:rgba(255,255,255,.9);font-size:.95rem;font-weight:600;margin-left:4px}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#6fcf8a;
-  box-shadow:0 0 6px #6fcf8a;animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.sync-txt{color:rgba(255,255,255,.55);font-size:.75rem;white-space:nowrap}
-.btn-refresh{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);
-  padding:7px 12px;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer}
-.btn-refresh:hover{background:rgba(255,255,255,.2)}
-.btn-ppt{background:var(--rojo);color:#fff;border:none;padding:7px 14px;border-radius:7px;
-  font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.btn-ppt:hover{background:#a00d23}
-.btn-ppt:disabled{opacity:.5;cursor:not-allowed}
+.hdr{background:var(--n);height:60px;display:flex;align-items:center;padding:0 28px;gap:16px;
+  position:sticky;top:0;z-index:300;border-bottom:1px solid rgba(255,255,255,.06);
+  box-shadow:0 2px 20px rgba(0,0,0,.5);}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-box{background:var(--r);width:34px;height:34px;border-radius:6px;display:flex;
+  align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
+.logo-txt{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:.5px}
+.hdr-div{width:1px;height:28px;background:rgba(255,255,255,.1);margin:0 4px}
+.hdr-sub{color:rgba(255,255,255,.4);font-size:.8rem;font-weight:500}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);flex-shrink:0;transition:background .3s}
+.sync-dot.ld{background:var(--amb);animation:blink 1s infinite}
+.sync-dot.er{background:var(--r)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.sync-txt{color:rgba(255,255,255,.4);font-size:.72rem;font-family:'DM Mono',monospace}
+.btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--rad2);
+  font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.bg{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.12)}
+.bg:hover{background:rgba(255,255,255,.13)}
+.br{background:var(--r);color:#fff}
+.br:hover{background:var(--r2)}
+.br:disabled{opacity:.4;cursor:not-allowed}
 
-/* ── FILTROS ── */
-.filtros-bar{background:#fff;border-bottom:2px solid var(--gris2);padding:10px 24px;
-  display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.filtros{background:#fff;border-bottom:1px solid var(--g2);padding:12px 28px;
+  display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;
+  position:sticky;top:60px;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.04);}
 .fg{display:flex;flex-direction:column;gap:3px}
-.fg label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gris4)}
-.fg select,.fg input{padding:7px 10px;border:1.5px solid var(--gris2);border-radius:7px;
-  font-size:.82rem;background:var(--gris1);color:#202124;min-width:140px;
-  appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer}
-.fg select:focus,.fg input:focus{outline:none;border-color:var(--oscuro)}
-.btn-limpiar{padding:7px 12px;background:var(--gris2);border:none;
-  border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--gris4);margin-bottom:1px}
-.btn-limpiar:hover{background:#d0d3d9}
+.fg label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g4)}
+.fg select,.fg input[type=date]{height:34px;padding:0 10px;border:1.5px solid var(--g2);border-radius:var(--rad2);
+  font-size:.82rem;color:#1a1c2e;background:var(--g1);min-width:130px;font-family:'DM Sans',sans-serif;
+  cursor:pointer;appearance:none;transition:border-color .15s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%239196ab'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--n);background:#fff}
+.btn-clr{height:34px;padding:0 12px;background:var(--g1);border:1.5px solid var(--g2);
+  border-radius:var(--rad2);font-size:.78rem;color:var(--g4);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:600;align-self:flex-end;transition:all .15s}
+.btn-clr:hover{background:var(--g2)}
 
-/* ── MAIN ── */
-.main{max-width:1400px;margin:0 auto;padding:20px 22px}
-
-/* ── KPIs ── */
-.kpis-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:1100px){.kpis-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.kpis-grid{grid-template-columns:1fr 1fr}}
-.kpi{background:#fff;border-radius:var(--radius);padding:16px 18px 14px;
-  box-shadow:var(--shadow);border-top:3px solid var(--rojo);transition:transform .18s}
-.kpi:hover{transform:translateY(-2px)}
-.kpi.verde{border-top-color:var(--verde)}
-.kpi.azul{border-top-color:var(--azul)}
-.kpi.amarillo{border-top-color:var(--amarillo)}
-.kpi.oscuro{border-top-color:var(--oscuro)}
-.kpi-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--gris4);margin-bottom:7px}
-.kpi-val{font-size:2.2rem;font-weight:900;color:var(--oscuro);line-height:1;font-variant-numeric:tabular-nums}
-.kpi-sub{font-size:.7rem;color:var(--gris3);margin-top:5px}
-
-/* ── CHARTS ROW ── */
-.charts-row{display:grid;gap:14px;margin-bottom:14px}
-.cr2{grid-template-columns:1fr 1fr}
-.cr3{grid-template-columns:1.2fr 1fr 1fr}
-@media(max-width:900px){.cr2,.cr3{grid-template-columns:1fr}}
-
-.panel{background:#fff;border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow)}
-.panel-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--gris4);margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.panel-title .dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-.chart-wrap{height:210px;position:relative}
-
-/* ── TABLA ── */
-.tabla-panel{background:#fff;border-radius:var(--radius);padding:18px;
-  box-shadow:var(--shadow);margin-bottom:14px}
-.tabla-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.tabla-header h3{font-size:.72rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--gris4)}
-.cnt-badge{font-size:.75rem;color:var(--gris3);background:var(--gris1);
-  padding:3px 10px;border-radius:20px;border:1px solid var(--gris2)}
-.tabla-wrap{overflow-x:auto;max-height:400px;overflow-y:auto}
-table{width:100%;border-collapse:collapse;font-size:.8rem}
-thead{position:sticky;top:0;z-index:2}
-thead tr{background:var(--oscuro)}
-thead th{color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;
-  font-weight:700;letter-spacing:.06em;white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--gris2);transition:background .1s}
-tbody tr:hover{background:var(--gris1)}
-tbody td{padding:8px 12px;vertical-align:middle}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;
-  font-size:.68rem;font-weight:700;white-space:nowrap}
-.b-rojo{background:#fce8ec;color:var(--rojo)}
-.b-azul{background:#e8f0fe;color:var(--azul)}
-.b-verde{background:#e6f4ea;color:var(--verde)}
-.b-gris{background:var(--gris1);color:var(--gris4)}
-.ev-link{color:var(--rojo);text-decoration:none;font-weight:700;font-size:.78rem}
-.ev-link:hover{text-decoration:underline}
-.personas-cell{display:flex;gap:8px;align-items:center}
-.p-ico{font-size:.75rem;color:var(--gris4)}
-
-/* ── FOTOS ── */
-.fotos-panel{background:#fff;border-radius:var(--radius);padding:18px;
-  box-shadow:var(--shadow);margin-bottom:14px}
-.fotos-panel h3{font-size:.72rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--gris4);margin-bottom:14px}
-.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.foto-card{border-radius:9px;overflow:hidden;aspect-ratio:4/3;background:var(--gris2);
-  position:relative;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.08)}
-.foto-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
-.foto-card:hover img{transform:scale(1.04)}
-.foto-caption{position:absolute;bottom:0;left:0;right:0;
-  background:linear-gradient(transparent,rgba(0,0,0,.75));
-  color:#fff;font-size:.65rem;padding:16px 7px 5px;font-weight:600;line-height:1.3}
-.foto-placeholder{width:100%;height:100%;display:flex;align-items:center;
-  justify-content:center;font-size:2rem;color:var(--gris3)}
-
-/* ── RESUMEN POR SUPERVISOR ── */
-.sup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:14px}
-.sup-card{background:#fff;border-radius:var(--radius);padding:16px 18px;
-  box-shadow:var(--shadow);border-left:4px solid var(--rojo)}
-.sup-name{font-size:.9rem;font-weight:700;color:var(--oscuro);margin-bottom:10px}
-.sup-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.sup-stat{text-align:center}
-.sup-stat .n{font-size:1.4rem;font-weight:900;color:var(--oscuro)}
-.sup-stat .l{font-size:.65rem;color:var(--gris3);text-transform:uppercase;letter-spacing:.05em}
-
-/* ── EMPTY ── */
-.empty{text-align:center;padding:50px 20px;color:var(--gris3)}
-.empty-ico{font-size:2.5rem;margin-bottom:10px}
-.empty p{font-size:.9rem}
-
-/* ── OVERLAY ── */
-.overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-  gap:12px;z-index:999}
-.overlay.on{display:flex}
-.spin{width:42px;height:42px;border:4px solid var(--gris2);
-  border-top-color:var(--rojo);border-radius:50%;animation:giro .8s linear infinite}
-@keyframes giro{to{transform:rotate(360deg)}}
-.overlay-txt{font-weight:700;color:var(--oscuro);font-size:.9rem}
-.overlay-sub{font-size:.78rem;color:var(--gris3)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:18px;right:18px;padding:11px 18px;border-radius:9px;
-  color:#fff;font-weight:600;font-size:.85rem;box-shadow:0 4px 18px rgba(0,0,0,.2);
-  opacity:0;transform:translateY(8px);transition:all .28s;z-index:9999;pointer-events:none}
-.toast.on{opacity:1;transform:translateY(0)}
-.toast.ok{background:var(--verde)}.toast.err{background:var(--rojo)}
-
-/* ── MODAL FOTO ── */
-.modal-foto{position:fixed;inset:0;background:rgba(0,0,0,.88);
-  display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
-.modal-foto.on{display:flex}
-.modal-foto img{max-width:92vw;max-height:92vh;border-radius:10px}
-.mf-close{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.15);
-  color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:20px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center}
-
-/* ── TABS ── */
-.tabs{background:#fff;border-bottom:2px solid var(--gris2);display:flex;
-  overflow-x:auto;padding:0 22px;position:sticky;top:58px;z-index:100}
+.tabs{background:#fff;border-bottom:1px solid var(--g2);display:flex;overflow-x:auto;
+  padding:0 24px;position:sticky;top:109px;z-index:190;}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:13px 18px;font-size:.78rem;font-weight:700;color:var(--gris3);
-  border:none;background:none;border-bottom:3px solid transparent;cursor:pointer;
-  white-space:nowrap;-webkit-tap-highlight-color:transparent;letter-spacing:.03em}
-.tab.on{color:var(--rojo);border-bottom-color:var(--rojo)}
-.tab:hover:not(.on){color:var(--oscuro)}
+.tab{padding:13px 20px;font-size:.78rem;font-weight:600;color:var(--g3);border:none;
+  background:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;
+  transition:all .18s;font-family:'DM Sans',sans-serif;}
+.tab.on{color:var(--r);border-bottom-color:var(--r)}
+.tab:hover:not(.on){color:#1a1c2e}
 
-.seccion{display:none}.seccion.on{display:block}
+.main{max-width:1440px;margin:0 auto;padding:22px 26px 40px}
+.sec{display:none}.sec.on{display:block}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:#fff;border-radius:var(--rad);padding:18px 20px 16px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--r)}
+.kpi.grn::before{background:var(--grn)}.kpi.blu::before{background:var(--blu)}
+.kpi.amb::before{background:var(--amb)}.kpi.drk::before{background:var(--n)}
+.kpi-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:17px;margin-bottom:12px;background:rgba(200,16,46,.08);}
+.kpi.grn .kpi-ico{background:rgba(16,185,129,.1)}.kpi.blu .kpi-ico{background:rgba(59,130,246,.1)}
+.kpi.amb .kpi-ico{background:rgba(245,158,11,.1)}.kpi.drk .kpi-ico{background:rgba(13,15,26,.08)}
+.kpi-lbl{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g3);margin-bottom:5px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#1a1c2e;line-height:1;letter-spacing:.5px}
+.kpi-sub{font-size:.68rem;color:var(--g3);margin-top:4px}
+
+.row{display:grid;gap:16px;margin-bottom:16px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1.3fr 1fr 1fr}
+@media(max-width:960px){.c2,.c3{grid-template-columns:1fr}}
+.panel{background:#fff;border-radius:var(--rad);padding:20px 20px 16px;box-shadow:var(--sh)}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.pt{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g4);display:flex;align-items:center;gap:8px}
+.pip{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.cb{position:relative}.csm{height:200px}.cmd{height:240px}.clg{height:310px}
+
+.tbl-wrap{overflow-x:auto;max-height:420px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.79rem}
+thead{position:sticky;top:0;z-index:2}
+thead tr{background:var(--n)}
+thead th{color:rgba(255,255,255,.8);padding:9px 12px;text-align:left;
+  font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
+tbody tr{border-bottom:1px solid #f0f1f5;transition:background .1s}
+tbody tr:hover{background:#f8f9fc}
+tbody td{padding:8px 12px;vertical-align:middle}
+.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.67rem;font-weight:700;white-space:nowrap}
+.cr{background:#fce8ec;color:var(--r)}.cb_{background:#eff6ff;color:#1d4ed8}
+.cg{background:#ecfdf5;color:#047857}.cn{background:#f0f1f5;color:var(--g4)}
+.evl{color:var(--r);text-decoration:none;font-size:.75rem;font-weight:700}
+.evl:hover{text-decoration:underline}
+.cnt{font-size:.72rem;color:var(--g3);background:var(--g1);padding:3px 10px;border-radius:20px;border:1px solid var(--g2)}
+
+.sup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:18px}
+.sup-card{background:#fff;border-radius:var(--rad);padding:18px;box-shadow:var(--sh);
+  border-left:3px solid var(--r);transition:transform .15s,box-shadow .15s;}
+.sup-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.sup-name{font-size:.92rem;font-weight:700;color:#1a1c2e;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sup-av{width:32px;height:32px;border-radius:50%;background:var(--n);display:flex;align-items:center;
+  justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--r);flex-shrink:0;}
+.sup-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.sst{text-align:center;background:var(--g1);border-radius:8px;padding:8px 4px}
+.sst .sv{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#1a1c2e;line-height:1}
+.sst .sl{font-size:.6rem;color:var(--g3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.sup-meta{margin-top:10px;font-size:.7rem;color:var(--g3);padding-top:10px;border-top:1px solid var(--g2)}
+
+.fg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.foto-card{border-radius:10px;overflow:hidden;aspect-ratio:4/3;background:var(--g2);
+  position:relative;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s;}
+.foto-card:hover{transform:scale(1.03);box-shadow:var(--sh2)}
+.foto-card img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-cap{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.8));
+  color:#fff;font-size:.66rem;padding:20px 9px 7px;line-height:1.4;}
+.foto-cap strong{display:block;font-size:.72rem}
+
+.mfw{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;
+  align-items:center;justify-content:center;z-index:9000;padding:20px;}
+.mfw.on{display:flex}
+.mfw img{max-width:90vw;max-height:90vh;border-radius:10px;box-shadow:0 8px 60px rgba(0,0,0,.6)}
+.mfc{position:fixed;top:16px;right:18px;background:rgba(255,255,255,.1);color:#fff;
+  border:1px solid rgba(255,255,255,.2);border-radius:50%;width:40px;height:40px;
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+.empty{text-align:center;padding:60px 20px;color:var(--g3)}
+.empty-ico{font-size:2.8rem;margin-bottom:10px;opacity:.5}
+
+.ov{position:fixed;inset:0;background:rgba(255,255,255,.94);display:none;
+  align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;}
+.ov.on{display:flex}
+.spin{width:44px;height:44px;border:3px solid var(--g2);border-top-color:var(--r);
+  border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ovt{font-weight:700;color:#1a1c2e;font-size:.9rem}
+.ovs{font-size:.75rem;color:var(--g3)}
+
+.toast{position:fixed;bottom:20px;right:20px;padding:11px 18px;border-radius:10px;
+  color:#fff;font-weight:600;font-size:.84rem;box-shadow:0 4px 20px rgba(0,0,0,.18);
+  opacity:0;transform:translateY(6px);transition:all .25s;z-index:9998;pointer-events:none;}
+.toast.on{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--grn)}.toast.er2{background:var(--r)}
 </style>
 </head>
 <body>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay">
-  <div class="spin"></div>
-  <div class="overlay-txt" id="overlayTxt">Cargando datos...</div>
-  <div class="overlay-sub" id="overlaySub">Conectando con Google Sheets</div>
-</div>
-<div class="toast" id="toast"></div>
-<div class="modal-foto" id="modalFoto" onclick="cerrarFoto(event)">
-  <button class="mf-close" onclick="document.getElementById('modalFoto').classList.remove('on')">✕</button>
-  <img id="modalFotoImg" src="" alt="">
+<div class="ov" id="ov"><div class="spin"></div><div class="ovt" id="ovt">Cargando...</div><div class="ovs" id="ovs"></div></div>
+<div class="toast" id="tst"></div>
+<div class="mfw" id="mfw" onclick="mfC(event)">
+  <button class="mfc" onclick="document.getElementById('mfw').classList.remove('on')">✕</button>
+  <img id="mfi" src="" alt="">
 </div>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="logo">
-    <span class="logo-plus">+</span>
-    <span class="logo-marka">MARKA</span>
-  </div>
-  <span class="header-title">Tablero de Activaciones</span>
-  <div class="header-right">
-    <div class="sync-dot" id="syncDot"></div>
-    <span class="sync-txt" id="syncTxt">Actualizando...</span>
-    <button class="btn-refresh" onclick="cargarDatos(true)">↻ Actualizar</button>
-    <button class="btn-ppt" id="btnPPT" onclick="generarPPT()">⬇ Descargar PPT</button>
+<header class="hdr">
+  <div class="logo"><div class="logo-box">+</div><span class="logo-txt">MARKA</span></div>
+  <div class="hdr-div"></div>
+  <span class="hdr-sub">Tablero de Activaciones</span>
+  <div class="hdr-right">
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="sync-dot ld" id="sd"></div>
+      <span class="sync-txt" id="st">conectando...</span>
+    </div>
+    <button class="btn bg" onclick="load(true)">↻ Actualizar</button>
+    <button class="btn br" id="btnP" onclick="genPPT()">⬇ Exportar PPT</button>
   </div>
 </header>
 
-<!-- FILTROS -->
-<div class="filtros-bar">
-  <div class="fg"><label>Supervisor</label>
-    <select id="fSup" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Marca</label>
-    <select id="fMar" onchange="aplicarFiltros()"><option value="">Todas</option></select></div>
-  <div class="fg"><label>Local</label>
-    <select id="fLoc" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Tipo de Activación</label>
-    <select id="fTip" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Desde</label>
-    <input type="date" id="fDes" onchange="aplicarFiltros()"></div>
-  <div class="fg"><label>Hasta</label>
-    <input type="date" id="fHas" onchange="aplicarFiltros()"></div>
-  <button class="btn-limpiar" onclick="limpiarFiltros()">✕ Limpiar</button>
+<div class="filtros">
+  <div class="fg"><label>Supervisor</label><select id="fS" onchange="apply()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Marca</label><select id="fM" onchange="apply()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Local</label><select id="fL" onchange="apply()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Tipo</label><select id="fT" onchange="apply()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Desde</label><input type="date" id="fD" onchange="apply()"></div>
+  <div class="fg"><label>Hasta</label><input type="date" id="fH" onchange="apply()"></div>
+  <button class="btn-clr" onclick="clr()">✕ Limpiar</button>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
-  <button class="tab on" id="tab0" onclick="cambiarTab(0)">📊 Resumen</button>
-  <button class="tab" id="tab1" onclick="cambiarTab(1)">👤 Supervisores</button>
-  <button class="tab" id="tab2" onclick="cambiarTab(2)">📦 Productos</button>
-  <button class="tab" id="tab3" onclick="cambiarTab(3)">📋 Detalle</button>
-  <button class="tab" id="tab4" onclick="cambiarTab(4)">📷 Evidencias</button>
+  <button class="tab on" id="t0" onclick="goT(0)">📊 Resumen</button>
+  <button class="tab" id="t1" onclick="goT(1)">👤 Supervisores</button>
+  <button class="tab" id="t2" onclick="goT(2)">📦 Productos</button>
+  <button class="tab" id="t3" onclick="goT(3)">📋 Detalle</button>
+  <button class="tab" id="t4" onclick="goT(4)">📷 Evidencias</button>
 </div>
 
 <div class="main">
-
-<!-- ══ TAB 0: RESUMEN ══ -->
-<div class="seccion on" id="sec0">
-  <div class="kpis-grid" id="kpisGrid"></div>
-  <div class="charts-row cr3">
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Activaciones por Marca</div>
-      <div class="chart-wrap"><canvas id="cMarca"></canvas></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--azul)"></div>Tipo de Activación</div>
-      <div class="chart-wrap"><canvas id="cTipo"></canvas></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--verde)"></div>Personas por Marca</div>
-      <div class="chart-wrap"><canvas id="cPersonasMarca"></canvas></div>
-    </div>
+<!-- TAB 0 -->
+<div class="sec on" id="s0">
+  <div class="kpis" id="kEl"></div>
+  <div class="row c3">
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Activaciones por Marca</div></div><div class="cb cmd"><canvas id="cMa"></canvas></div></div>
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--blu)"></div>Tipo de Activación</div></div><div class="cb cmd"><canvas id="cTi"></canvas></div></div>
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--grn)"></div>Personas por Marca</div></div><div class="cb cmd"><canvas id="cPM"></canvas></div></div>
   </div>
-  <div class="charts-row cr2">
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--amarillo)"></div>Activaciones por Local (Top 10)</div>
-      <div class="chart-wrap"><canvas id="cLocal"></canvas></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--oscuro)"></div>Top Productos Vendidos</div>
-      <div class="chart-wrap"><canvas id="cProd"></canvas></div>
-    </div>
+  <div class="row c2">
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--amb)"></div>Top Locales</div></div><div class="cb cmd"><canvas id="cLo"></canvas></div></div>
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--n)"></div>Top Productos</div></div><div class="cb cmd"><canvas id="cPr"></canvas></div></div>
   </div>
 </div>
-
-<!-- ══ TAB 1: SUPERVISORES ══ -->
-<div class="seccion" id="sec1">
-  <div class="sup-grid" id="supGrid"></div>
+<!-- TAB 1 -->
+<div class="sec" id="s1">
+  <div class="sup-grid" id="sgEl"></div>
+  <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Personas por Supervisor</div></div><div class="cb cmd"><canvas id="cSP"></canvas></div></div>
+</div>
+<!-- TAB 2 -->
+<div class="sec" id="s2">
+  <div class="row c2">
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Unidades por Producto (Top 15)</div></div><div class="cb clg"><canvas id="cPD"></canvas></div></div>
+    <div class="panel"><div class="ph"><div class="pt"><div class="pip" style="background:var(--blu)"></div>Unidades por Marca</div></div><div class="cb cmd"><canvas id="cMU"></canvas></div></div>
+  </div>
+</div>
+<!-- TAB 3 -->
+<div class="sec" id="s3">
   <div class="panel">
-    <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Personas Abordadas por Supervisor</div>
-    <div class="chart-wrap"><canvas id="cSupPersonas"></canvas></div>
+    <div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Registros</div><span class="cnt" id="cBd">—</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Fecha</th><th>Supervisor</th><th>Marca</th><th>Local</th><th>Tipo</th><th>Temática</th><th>👨</th><th>👩</th><th>👶</th><th>Producto</th><th>Cant.</th><th>Evidencia</th></tr></thead>
+      <tbody id="tBd"></tbody>
+    </table></div>
   </div>
 </div>
-
-<!-- ══ TAB 2: PRODUCTOS ══ -->
-<div class="seccion" id="sec2">
-  <div class="charts-row cr2">
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Unidades por Producto (Top 15)</div>
-      <div class="chart-wrap" style="height:320px"><canvas id="cProdDetalle"></canvas></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><div class="dot" style="background:var(--azul)"></div>Unidades por Marca</div>
-      <div class="chart-wrap"><canvas id="cMarcaUnd"></canvas></div>
-    </div>
+<!-- TAB 4 -->
+<div class="sec" id="s4">
+  <div class="panel">
+    <div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Evidencias Fotográficas</div><span class="cnt" id="fCnt">—</span></div>
+    <div class="fg-grid" id="fgEl"></div>
   </div>
 </div>
-
-<!-- ══ TAB 3: DETALLE ══ -->
-<div class="seccion" id="sec3">
-  <div class="tabla-panel">
-    <div class="tabla-header">
-      <h3>Registros de Activaciones</h3>
-      <span class="cnt-badge" id="cntBadge">—</span>
-    </div>
-    <div class="tabla-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th><th>Supervisor</th><th>Marca</th><th>Local</th>
-            <th>Tipo</th><th>Temática</th>
-            <th>👨</th><th>👩</th><th>👶</th>
-            <th>Producto</th><th>Cant.</th><th>Evidencia</th>
-          </tr>
-        </thead>
-        <tbody id="tablaBody"></tbody>
-      </table>
-    </div>
-  </div>
 </div>
-
-<!-- ══ TAB 4: EVIDENCIAS ══ -->
-<div class="seccion" id="sec4">
-  <div class="fotos-panel">
-    <h3>Evidencias Fotográficas</h3>
-    <div class="fotos-grid" id="fotosGrid"></div>
-  </div>
-</div>
-
-</div><!-- /main -->
 
 <script>
-// ═══════════════════════════════════════════════
-// CONFIG — URL CSV publicado de Hoja 1
-// ═══════════════════════════════════════════════
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
+const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
+let RAW=[],FIL=[],CH={},TAB=0;
+const PAL=["#C8102E","#0d0f1a","#10b981","#3b82f6","#f59e0b","#7c3aed","#0891b2","#db2777","#059669","#d97706"];
+const PALB=PAL.map(c=>c+"cc");
 
-let RAW = [], FIL = [];
-let CHARTS = {};
-let TAB_ACTIVO = 0;
+document.addEventListener("DOMContentLoaded",()=>load(false));
+setInterval(()=>load(false),5*60*1000);
 
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-document.addEventListener("DOMContentLoaded", () => cargarDatos(false));
-
-async function cargarDatos(manual=false) {
-  setSyncStatus("loading");
-  mostrarOverlay("Cargando datos...", "Leyendo Hoja 1 de Google Sheets");
-  try {
-    const r = await fetch(CSV_URL + "&t=" + Date.now());
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const txt = await r.text();
-    RAW = parsearCSV(txt);
-    poblarFiltros();
-    aplicarFiltros();
-    setSyncStatus("ok");
-    const h = new Date().toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"});
-    document.getElementById("syncTxt").textContent = "Actualizado " + h;
-    if (manual) toast("✓ Datos actualizados — " + RAW.length + " registros", "ok");
-  } catch(e) {
-    setSyncStatus("err");
-    document.getElementById("syncTxt").textContent = "Error de conexión";
-    toast("Error: " + e.message, "err");
-    console.error(e);
-  }
-  ocultarOverlay();
+async function load(m){
+  setSt("ld","conectando...");showOv("Cargando datos...","Leyendo Hoja 1");
+  try{
+    const r=await fetch(CSV+"&t="+Date.now());
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    RAW=pCSV(await r.text());
+    fillF();apply();
+    setSt("ok","act. "+new Date().toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"}));
+    if(m)tst("✓ "+RAW.length+" registros","ok");
+  }catch(e){setSt("er","sin conexión");tst("Error: "+e.message,"er2");}
+  hideOv();
+}
+function setSt(s,t){
+  const d=document.getElementById("sd");
+  d.className="sync-dot"+(s==="ld"?" ld":s==="er"?" er":"");
+  document.getElementById("st").textContent=t;
 }
 
-function setSyncStatus(s) {
-  const d = document.getElementById("syncDot");
-  d.style.background = s==="ok"?"#6fcf8a":s==="loading"?"#f59e0b":"#f06060";
-  d.style.boxShadow  = s==="ok"?"0 0 6px #6fcf8a":s==="loading"?"0 0 6px #f59e0b":"0 0 6px #f06060";
+function pCSV(txt){
+  const ls=txt.trim().split(/\r?\n/);if(ls.length<2)return[];
+  return ls.slice(1).map(l=>{
+    const c=csvR(l);
+    return{fecha:cl(c[0]),supervisor:cl(c[1]),marca:cl(c[2]),local:cl(c[3]),
+      tipo:cl(c[4]),tematica:cl(c[5]),hombres:n0(c[6]),mujeres:n0(c[7]),ninos:n0(c[8]),
+      producto:cl(c[9]),cantidad:n0(c[10]),evidencia:cl(c[11])};
+  }).filter(r=>r.fecha||r.supervisor||r.marca);
 }
+function csvR(l){const r=[];let cur="",q=false;for(let i=0;i<l.length;i++){const c=l[i];if(c==='"'){q=!q;continue;}if(c===','&&!q){r.push(cur);cur="";continue;}cur+=c;}r.push(cur);return r;}
+function cl(v){return(v||"").replace(/^"|"$/g,"").trim();}
+function n0(v){const n=parseFloat(cl(v));return isNaN(n)?0:n;}
+function fmt(v){return Math.round(v).toLocaleString("es-PY");}
+function es(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function pF(s){const p=s.split("/");return p.length===3?new Date(p[2],p[1]-1,p[0]):null;}
 
-// Auto-refresh 5 min
-setInterval(() => cargarDatos(false), 5 * 60 * 1000);
-
-// ═══════════════════════════════════════════════
-// PARSEAR CSV
-// ═══════════════════════════════════════════════
-function parsearCSV(txt) {
-  const lines = txt.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-  // fila 0 = encabezados, empezar desde fila 1
-  return lines.slice(1).map(l => {
-    const c = csvLine(l);
-    return {
-      fecha:      lmp(c[0]),
-      supervisor: lmp(c[1]),
-      marca:      lmp(c[2]),
-      local:      lmp(c[3]),
-      tipo:       lmp(c[4]),
-      tematica:   lmp(c[5]),
-      hombres:    n0(c[6]),
-      mujeres:    n0(c[7]),
-      ninos:      n0(c[8]),
-      producto:   lmp(c[9]),
-      cantidad:   n0(c[10]),
-      evidencia:  lmp(c[11]),
-    };
-  }).filter(r => r.fecha || r.supervisor || r.marca);
+function fillF(){
+  const u=k=>[...new Set(RAW.map(r=>r[k]).filter(Boolean))].sort();
+  fSel("fS",u("supervisor"));fSel("fM",u("marca"));fSel("fL",u("local"));fSel("fT",u("tipo"));
 }
-
-function csvLine(line) {
-  const res=[]; let cur=""; let inQ=false;
-  for(let i=0;i<line.length;i++){
-    const c=line[i];
-    if(c==='"'){inQ=!inQ;continue;}
-    if(c===','&&!inQ){res.push(cur);cur="";continue;}
-    cur+=c;
-  }
-  res.push(cur);
-  return res;
-}
-function lmp(v){ return (v||"").replace(/^"|"$/g,"").trim(); }
-function n0(v) { const n=parseFloat(lmp(v)); return isNaN(n)?0:n; }
-
-// ═══════════════════════════════════════════════
-// FILTROS
-// ═══════════════════════════════════════════════
-function poblarFiltros() {
-  const uniq=(k)=>[...new Set(RAW.map(r=>r[k]).filter(Boolean))].sort();
-  llenarSelect("fSup", uniq("supervisor"));
-  llenarSelect("fMar", uniq("marca"));
-  llenarSelect("fLoc", uniq("local"));
-  llenarSelect("fTip", uniq("tipo"));
-}
-
-function llenarSelect(id, vals) {
-  const s=document.getElementById(id), cur=s.value;
-  s.innerHTML='<option value="">Todos</option>';
-  vals.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;if(v===cur)o.selected=true;s.appendChild(o);});
-}
-
-function aplicarFiltros() {
-  const fSup=document.getElementById("fSup").value;
-  const fMar=document.getElementById("fMar").value;
-  const fLoc=document.getElementById("fLoc").value;
-  const fTip=document.getElementById("fTip").value;
-  const fDes=document.getElementById("fDes").value;
-  const fHas=document.getElementById("fHas").value;
-
-  FIL = RAW.filter(r => {
-    if(fSup && r.supervisor!==fSup) return false;
-    if(fMar && r.marca!==fMar)      return false;
-    if(fLoc && r.local!==fLoc)      return false;
-    if(fTip && r.tipo!==fTip)       return false;
-    if(fDes||fHas){
-      const fd=parseFecha(r.fecha);
-      if(!fd) return false;
-      if(fDes && fd<new Date(fDes)) return false;
-      if(fHas && fd>new Date(fHas+"T23:59:59")) return false;
-    }
+function fSel(id,vals){const s=document.getElementById(id),c=s.value;s.innerHTML='<option value="">Todos</option>';vals.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;if(v===c)o.selected=true;s.appendChild(o);});}
+function gv(id){return document.getElementById(id).value;}
+function apply(){
+  const fS=gv("fS"),fM=gv("fM"),fL=gv("fL"),fT=gv("fT"),fD=gv("fD"),fH=gv("fH");
+  FIL=RAW.filter(r=>{
+    if(fS&&r.supervisor!==fS)return false;if(fM&&r.marca!==fM)return false;
+    if(fL&&r.local!==fL)return false;if(fT&&r.tipo!==fT)return false;
+    if(fD||fH){const fd=pF(r.fecha);if(!fd)return false;
+      if(fD&&fd<new Date(fD))return false;if(fH&&fd>new Date(fH+"T23:59:59"))return false;}
     return true;
   });
-  renderTodo();
+  renderAll();
+}
+function clr(){["fS","fM","fL","fT"].forEach(id=>document.getElementById(id).value="");document.getElementById("fD").value="";document.getElementById("fH").value="";apply();}
+
+function goT(i){
+  document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("on",j===i));
+  document.querySelectorAll(".sec").forEach((s,j)=>s.classList.toggle("on",j===i));
+  TAB=i;setTimeout(renderAll,30);
 }
 
-function parseFecha(s){
-  const p=s.split("/"); if(p.length===3) return new Date(p[2],p[1]-1,p[0]); return null;
+function renderAll(){
+  rKPIs();
+  if(TAB===0)rR();if(TAB===1)rS();if(TAB===2)rP();if(TAB===3)rT();if(TAB===4)rF();
 }
 
-function limpiarFiltros(){
-  ["fSup","fMar","fLoc","fTip"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("fDes").value="";
-  document.getElementById("fHas").value="";
-  aplicarFiltros();
+function rKPIs(){
+  const aS=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+  let nP=0;const pS=new Set();
+  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pS.has(k)){pS.add(k);nP+=r.hombres+r.mujeres+r.ninos;}});
+  const nU=FIL.reduce((s,r)=>s+r.cantidad,0);
+  document.getElementById("kEl").innerHTML=[
+    {i:"⚡",l:"Activaciones",v:aS.size,s:"eventos registrados",c:""},
+    {i:"👥",l:"Personas",v:fmt(nP),s:"abordadas",c:"drk"},
+    {i:"📦",l:"Unidades",v:fmt(nU),s:"vendidas",c:"grn"},
+    {i:"🏷",l:"Marcas",v:new Set(FIL.map(r=>r.marca).filter(Boolean)).size,s:"activas",c:"blu"},
+    {i:"📍",l:"Locales",v:new Set(FIL.map(r=>r.local).filter(Boolean)).size,s:"puntos de venta",c:"amb"},
+  ].map(k=>`<div class="kpi ${k.c}"><div class="kpi-ico">${k.i}</div><div class="kpi-lbl">${k.l}</div><div class="kpi-val">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
 }
 
-// ═══════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════
-function cambiarTab(i){
-  document.querySelectorAll(".tab").forEach((t,idx)=>t.classList.toggle("on",idx===i));
-  document.querySelectorAll(".seccion").forEach((s,idx)=>s.classList.toggle("on",idx===i));
-  TAB_ACTIVO=i;
-  setTimeout(renderTodo,30);
-}
-
-// ═══════════════════════════════════════════════
-// RENDER GENERAL
-// ═══════════════════════════════════════════════
-function renderTodo(){
-  renderKPIs();
-  if(TAB_ACTIVO===0) renderResumen();
-  if(TAB_ACTIVO===1) renderSupervisores();
-  if(TAB_ACTIVO===2) renderProductos();
-  if(TAB_ACTIVO===3) renderTabla();
-  if(TAB_ACTIVO===4) renderFotos();
-}
-
-// ═══════════════════════════════════════════════
-// KPIs — siempre visibles
-// ═══════════════════════════════════════════════
-function renderKPIs(){
-  // Activaciones únicas
-  const actSet=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
-  const nAct=actSet.size;
-
-  // Personas (sin duplicar por activación)
-  let nPers=0; const persSet=new Set();
-  FIL.forEach(r=>{
-    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persSet.has(k)){
-      persSet.add(k); nPers+=r.hombres+r.mujeres+r.ninos;
-    }
-  });
-
-  const nUnd   = FIL.reduce((s,r)=>s+r.cantidad,0);
-  const nMarcas= new Set(FIL.map(r=>r.marca).filter(Boolean)).size;
-  const nLocal  = new Set(FIL.map(r=>r.local).filter(Boolean)).size;
-
-  document.getElementById("kpisGrid").innerHTML=[
-    {lbl:"Activaciones",  val:nAct,   sub:"eventos registrados",    cls:""},
-    {lbl:"Personas",       val:nPers,  sub:"abordadas en total",      cls:"oscuro"},
-    {lbl:"Unidades",       val:n(nUnd),sub:"productos vendidos",      cls:"verde"},
-    {lbl:"Marcas",         val:nMarcas,sub:"marcas trabajadas",       cls:"azul"},
-    {lbl:"Locales",        val:nLocal, sub:"puntos de venta",         cls:"amarillo"},
-  ].map(k=>`
-    <div class="kpi ${k.cls}">
-      <div class="kpi-lbl">${k.lbl}</div>
-      <div class="kpi-val">${k.val}</div>
-      <div class="kpi-sub">${k.sub}</div>
-    </div>`).join("");
-}
-
-// ═══════════════════════════════════════════════
-// TAB 0: RESUMEN
-// ═══════════════════════════════════════════════
-function renderResumen(){
-  // Activaciones por marca
-  const byMarca=contarActs("marca");
-  grafico("cMarca","doughnut",Object.keys(byMarca),Object.values(byMarca),"Activaciones",
-    ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b","7c3aed"].map(c=>"#"+c));
-
-  // Por tipo
-  const byTipo=contarActs("tipo");
-  grafico("cTipo","doughnut",Object.keys(byTipo),Object.values(byTipo),"Activaciones",
-    ["1a73e8","C8102E","1e7e34","f59e0b","7c3aed","0891b2"].map(c=>"#"+c));
-
-  // Personas por marca
-  const pm={};const pmV=new Set();
-  FIL.forEach(r=>{
-    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pmV.has(k)){
-      pmV.add(k);pm[r.marca]=(pm[r.marca]||0)+r.hombres+r.mujeres+r.ninos;
-    }
-  });
-  grafico("cPersonasMarca","bar",Object.keys(pm),Object.values(pm),"Personas","#1a1a2e");
-
-  // Por local top 10
-  const byLocal=contarActs("local");
-  const topLocal=Object.entries(byLocal).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  grafico("cLocal","bar",topLocal.map(e=>e[0]),topLocal.map(e=>e[1]),"Activaciones","#f59e0bcc");
-
-  // Top productos
-  const pp={};
-  FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
-  const topP=Object.entries(pp).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  grafico("cProd","bar",topP.map(e=>e[0]),topP.map(e=>e[1]),"Unidades","#C8102Ecc");
-}
-
-// ═══════════════════════════════════════════════
-// TAB 1: SUPERVISORES
-// ═══════════════════════════════════════════════
-function renderSupervisores(){
-  const bySup={};const supV=new Set();const persV=new Set();
-  FIL.forEach(r=>{
-    const s=r.supervisor||"(sin nombre)";
-    if(!bySup[s])bySup[s]={acts:0,pers:0,und:0,marcas:new Set(),locales:new Set()};
-    const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;
-    if(!supV.has(k)){supV.add(k);bySup[s].acts++;}
-    const pk=k+"|p";
-    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persV.has(pk)){
-      persV.add(pk);bySup[s].pers+=r.hombres+r.mujeres+r.ninos;
-    }
-    bySup[s].und+=r.cantidad;
-    if(r.marca) bySup[s].marcas.add(r.marca);
-    if(r.local) bySup[s].locales.add(r.local);
-  });
-
-  document.getElementById("supGrid").innerHTML=Object.entries(bySup).map(([nombre,d])=>`
-    <div class="sup-card">
-      <div class="sup-name">👤 ${nombre}</div>
-      <div class="sup-stats">
-        <div class="sup-stat"><div class="n">${d.acts}</div><div class="l">Activaciones</div></div>
-        <div class="sup-stat"><div class="n">${n(d.pers)}</div><div class="l">Personas</div></div>
-        <div class="sup-stat"><div class="n">${n(d.und)}</div><div class="l">Unidades</div></div>
-      </div>
-      <div style="margin-top:10px;font-size:.72rem;color:var(--gris3)">
-        ${d.marcas.size} marca${d.marcas.size!==1?"s":""} · ${d.locales.size} local${d.locales.size!==1?"es":""}
-      </div>
-    </div>`).join("");
-
-  // Gráfico personas por supervisor
-  const labels=Object.keys(bySup);
-  const valores=Object.values(bySup).map(d=>d.pers);
-  grafico("cSupPersonas","bar",labels,valores,"Personas","#1a1a2e");
-}
-
-// ═══════════════════════════════════════════════
-// TAB 2: PRODUCTOS
-// ═══════════════════════════════════════════════
-function renderProductos(){
-  const pp={};
-  FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
-  const sorted=Object.entries(pp).sort((a,b)=>b[1]-a[1]);
-  const top15=sorted.slice(0,15);
-  grafico("cProdDetalle","bar",top15.map(e=>e[0]),top15.map(e=>e[1]),"Unidades","#C8102E",true);
-
-  // Por marca
-  const pm={};
-  FIL.forEach(r=>{if(r.marca&&r.cantidad>0)pm[r.marca]=(pm[r.marca]||0)+r.cantidad;});
-  grafico("cMarcaUnd","doughnut",Object.keys(pm),Object.values(pm),"Unidades",
-    ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b"].map(c=>"#"+c));
-}
-
-// ═══════════════════════════════════════════════
-// TAB 3: TABLA
-// ═══════════════════════════════════════════════
-function renderTabla(){
-  document.getElementById("cntBadge").textContent=`${FIL.length} registro${FIL.length!==1?"s":""}`;
-  const tbody=document.getElementById("tablaBody");
-  if(!FIL.length){
-    tbody.innerHTML=`<tr><td colspan="12"><div class="empty"><div class="empty-ico">📊</div><p>Sin datos para los filtros seleccionados</p></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML=FIL.map(r=>`
-    <tr>
-      <td style="white-space:nowrap;font-size:.78rem;color:var(--gris4)">${r.fecha||"—"}</td>
-      <td style="font-weight:600">${r.supervisor||"—"}</td>
-      <td><span class="badge b-rojo">${r.marca||"—"}</span></td>
-      <td style="font-size:.8rem">${r.local||"—"}</td>
-      <td><span class="badge b-azul">${r.tipo||"—"}</span></td>
-      <td style="font-size:.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.tematica}">${r.tematica||"—"}</td>
-      <td style="text-align:center">${r.hombres||""}</td>
-      <td style="text-align:center">${r.mujeres||""}</td>
-      <td style="text-align:center">${r.ninos||""}</td>
-      <td style="font-size:.8rem">${r.producto||"—"}</td>
-      <td style="text-align:center;font-weight:700;color:var(--verde)">${r.cantidad||""}</td>
-      <td>${r.evidencia?`<a class="ev-link" href="${r.evidencia}" target="_blank">📎 Ver</a>`:"—"}</td>
-    </tr>`).join("");
-}
-
-// ═══════════════════════════════════════════════
-// TAB 4: FOTOS
-// ═══════════════════════════════════════════════
-function renderFotos(){
-  const grid=document.getElementById("fotosGrid");
-  const conFoto=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
-  if(!conFoto.length){
-    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📷</div><p>Sin evidencias fotográficas en este período</p></div>`;
-    return;
-  }
-  // Deduplicar por URL
-  const seen=new Set();
-  const unicas=conFoto.filter(r=>{if(seen.has(r.evidencia))return false;seen.add(r.evidencia);return true;});
-
-  grid.innerHTML=unicas.map(r=>{
-    // Convertir URL de Drive a URL de previsualización
-    const preview = convertirUrlDrive(r.evidencia);
-    return `<div class="foto-card" onclick="abrirFoto('${r.evidencia}')">
-      <img src="${preview}"
-           onerror="this.parentElement.innerHTML='<div class=foto-placeholder>🖼️</div>'"
-           alt="Evidencia" loading="lazy">
-      <div class="foto-caption">${r.marca}<br>${r.local} · ${r.fecha}</div>
-    </div>`;
-  }).join("");
-}
-
-function convertirUrlDrive(url){
-  // https://drive.google.com/file/d/ID/view?... → https://drive.google.com/thumbnail?id=ID&sz=w400
-  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if(m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`;
-  return url;
-}
-
-function abrirFoto(url){
-  document.getElementById("modalFotoImg").src=url;
-  document.getElementById("modalFoto").classList.add("on");
-}
-function cerrarFoto(e){
-  if(e.target===document.getElementById("modalFoto"))
-    document.getElementById("modalFoto").classList.remove("on");
-}
-
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-function contarActs(campo){
+function cntA(campo){
   const m={};const v=new Set();
-  FIL.forEach(r=>{
-    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if(r[campo]&&!v.has(campo+k)){v.add(campo+k);m[r[campo]]=(m[r[campo]]||0)+1;}
-  });
+  FIL.forEach(r=>{const k=campo+`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if(r[campo]&&!v.has(k)){v.add(k);m[r[campo]]=(m[r[campo]]||0)+1;}});
   return m;
 }
 
-function n(val){ return Math.round(val).toLocaleString("es-PY"); }
+function rR(){
+  const bm=cntA("marca");ch("cMa","doughnut",Object.keys(bm),Object.values(bm),"Acts",PAL);
+  const bt=cntA("tipo");ch("cTi","doughnut",Object.keys(bt),Object.values(bt),"Acts",PAL);
+  const pm={};const pmV=new Set();
+  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pmV.has(k)){pmV.add(k);pm[r.marca]=(pm[r.marca]||0)+r.hombres+r.mujeres+r.ninos;}});
+  ch("cPM","bar",Object.keys(pm),Object.values(pm),"Personas","#0d0f1a",false,false);
+  const bl=cntA("local");const tl=Object.entries(bl).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  ch("cLo","bar",tl.map(e=>e[0]),tl.map(e=>e[1]),"Acts","#f59e0b",false,true);
+  const pp={};FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
+  const tp=Object.entries(pp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  ch("cPr","bar",tp.map(e=>e[0]),tp.map(e=>e[1]),"Und","#C8102E",false,true);
+}
 
-const COLS=["#C8102E","#1a1a2e","#1e7e34","#1a73e8","#f59e0b","#7c3aed","#0891b2","#db2777","#059669","#d97706","#4f46e5","#0284c7","#16a34a","#dc2626","#9333ea"];
+function rS(){
+  const bs={};const sV=new Set();const pV=new Set();
+  FIL.forEach(r=>{
+    const s=r.supervisor||"—";if(!bs[s])bs[s]={a:0,p:0,u:0,marcas:new Set(),locales:new Set()};
+    const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;if(!sV.has(k)){sV.add(k);bs[s].a++;}
+    const pk=k+"|p";if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV.has(pk)){pV.add(pk);bs[s].p+=r.hombres+r.mujeres+r.ninos;}
+    bs[s].u+=r.cantidad;if(r.marca)bs[s].marcas.add(r.marca);if(r.local)bs[s].locales.add(r.local);
+  });
+  document.getElementById("sgEl").innerHTML=Object.entries(bs).map(([n,d])=>`
+    <div class="sup-card">
+      <div class="sup-name"><div class="sup-av">${n.charAt(0)}</div>${n}</div>
+      <div class="sup-stats">
+        <div class="sst"><div class="sv">${d.a}</div><div class="sl">Acts.</div></div>
+        <div class="sst"><div class="sv">${fmt(d.p)}</div><div class="sl">Pers.</div></div>
+        <div class="sst"><div class="sv">${fmt(d.u)}</div><div class="sl">Und.</div></div>
+      </div>
+      <div class="sup-meta">${d.marcas.size} marca${d.marcas.size!==1?"s":""} · ${d.locales.size} local${d.locales.size!==1?"es":""}</div>
+    </div>`).join("");
+  ch("cSP","bar",Object.keys(bs),Object.values(bs).map(d=>d.p),"Personas","#0d0f1a");
+}
 
-function grafico(id, tipo, labels, datos, label, color, horizontal=false){
-  if(CHARTS[id]){CHARTS[id].destroy();delete CHARTS[id];}
+function rP(){
+  const pp={};FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
+  const top=Object.entries(pp).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  ch("cPD","bar",top.map(e=>e[0]),top.map(e=>e[1]),"Und","#C8102E",false,true);
+  const pm={};FIL.forEach(r=>{if(r.marca&&r.cantidad>0)pm[r.marca]=(pm[r.marca]||0)+r.cantidad;});
+  ch("cMU","doughnut",Object.keys(pm),Object.values(pm),"Und",PAL);
+}
+
+function rT(){
+  document.getElementById("cBd").textContent=FIL.length+" reg.";
+  const tb=document.getElementById("tBd");
+  if(!FIL.length){tb.innerHTML=`<tr><td colspan="12"><div class="empty"><div class="empty-ico">📊</div><p>Sin datos</p></div></td></tr>`;return;}
+  tb.innerHTML=FIL.map(r=>`<tr>
+    <td style="white-space:nowrap;font-family:'DM Mono',monospace;font-size:.74rem;color:var(--g4)">${r.fecha||"—"}</td>
+    <td style="font-weight:600">${r.supervisor||"—"}</td>
+    <td><span class="chip cr">${r.marca||"—"}</span></td>
+    <td style="font-size:.78rem">${r.local||"—"}</td>
+    <td><span class="chip cb_">${r.tipo||"—"}</span></td>
+    <td style="font-size:.73rem;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${es(r.tematica)}">${r.tematica||"—"}</td>
+    <td style="text-align:center">${r.hombres||""}</td><td style="text-align:center">${r.mujeres||""}</td><td style="text-align:center">${r.ninos||""}</td>
+    <td style="font-size:.78rem">${r.producto||"—"}</td>
+    <td style="text-align:center;font-weight:700;color:var(--grn)">${r.cantidad||""}</td>
+    <td>${r.evidencia?`<a class="evl" href="${r.evidencia}" target="_blank">📎 Ver</a>`:"—"}</td>
+  </tr>`).join("");
+}
+
+function rF(){
+  const grid=document.getElementById("fgEl");
+  const cF=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
+  const seen=new Set();const unicas=cF.filter(r=>{if(seen.has(r.evidencia))return false;seen.add(r.evidencia);return true;});
+  document.getElementById("fCnt").textContent=unicas.length+" fotos";
+  if(!unicas.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📷</div><p>Sin evidencias</p></div>`;return;}
+  grid.innerHTML=unicas.map(r=>{
+    const m=r.evidencia.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const prev=m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`:r.evidencia;
+    return`<div class="foto-card" onclick="mfO('${r.evidencia}')">
+      <img src="${prev}" onerror="this.style.display='none'" loading="lazy">
+      <div class="foto-cap"><strong>${es(r.marca)}</strong>${es(r.local)} · ${es(r.fecha)}</div>
+    </div>`;
+  }).join("");
+}
+function mfO(u){document.getElementById("mfi").src=u;document.getElementById("mfw").classList.add("on");}
+function mfC(e){if(e.target===document.getElementById("mfw"))document.getElementById("mfw").classList.remove("on");}
+
+function ch(id,tipo,labels,data,label,color,hl=false,hb=false){
+  if(CH[id]){CH[id].destroy();delete CH[id];}
   const ctx=document.getElementById(id);if(!ctx)return;
-  const cols=Array.isArray(color)?color:labels.map((_,i)=>COLS[i%COLS.length]);
-  const isBar=tipo==="bar";
-  CHARTS[id]=new Chart(ctx,{
-    type:tipo,
-    data:{labels,datasets:[{label,data:datos,
-      backgroundColor:isBar?cols.map(c=>c+"cc"):cols,
-      borderColor:isBar?cols:"#fff",
-      borderWidth:isBar?0:2,
-      borderRadius:isBar?5:0,
-    }]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      indexAxis:horizontal?"y":"x",
-      plugins:{
-        legend:{display:tipo!=="bar",position:"right",
-          labels:{font:{size:11},boxWidth:11,padding:9}},
-        tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y??ctx.parsed}: ${ctx.dataset.label}`}}
-      },
-      scales:isBar?{
-        y:{beginAtZero:true,grid:{color:"#e8eaed"},ticks:{color:"#5f6368",font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:"#5f6368",font:{size:10},maxRotation:32,maxTicksLimit:12}}
-      }:{},
-    }
+  const isB=tipo==="bar";
+  const cols=Array.isArray(color)?color:labels.map((_,i)=>PALB[i%PALB.length]);
+  CH[id]=new Chart(ctx,{
+    type:tipo,data:{labels,datasets:[{label,data,
+      backgroundColor:isB?(Array.isArray(color)?color.map(c=>c+"cc"):cols):cols,
+      borderColor:isB?"transparent":"#fff",borderWidth:isB?0:2,borderRadius:isB?5:0}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:hb?"y":"x",
+      plugins:{legend:{display:!isB,position:"right",
+        labels:{font:{size:11,family:"DM Sans"},boxWidth:10,padding:10,color:"#5a5f7a"}},
+        tooltip:{callbacks:{label:c=>` ${c.parsed.y??c.parsed}: ${c.dataset.label}`}}},
+      scales:isB?{y:{beginAtZero:true,grid:{color:"#f0f1f5"},ticks:{color:"#9196ab",font:{size:10}}},
+        x:{grid:{display:false},ticks:{color:"#9196ab",font:{size:10},maxRotation:30,maxTicksLimit:10}}}:{}}
   });
 }
 
-// ═══════════════════════════════════════════════
-// GENERAR PPT — estilo +MARKA
-// ═══════════════════════════════════════════════
-async function generarPPT(){
-  if(!FIL.length){toast("Sin datos para exportar","err");return;}
-  const btn=document.getElementById("btnPPT");
-  btn.disabled=true;btn.textContent="⏳ Generando...";
-  mostrarOverlay("Generando presentación...","Puede tomar unos segundos");
+function showOv(t,s){document.getElementById("ovt").textContent=t;document.getElementById("ovs").textContent=s||"";document.getElementById("ov").classList.add("on");}
+function hideOv(){document.getElementById("ov").classList.remove("on");}
+let _tt;
+function tst(msg,tipo){const el=document.getElementById("tst");el.textContent=msg;el.className="toast "+(tipo||"ok");clearTimeout(_tt);requestAnimationFrame(()=>el.classList.add("on"));_tt=setTimeout(()=>el.classList.remove("on"),3500);}
 
+// ═══════════════════════════════════════
+// PPT — FIEL AL FORMATO DE REFERENCIA
+// ═══════════════════════════════════════
+async function genPPT(){
+  if(!FIL.length){tst("Sin datos para exportar","er2");return;}
+  const btn=document.getElementById("btnP");btn.disabled=true;btn.textContent="⏳ Generando...";
+  showOv("Generando presentación...","Seguí el modelo de referencia");
   try{
     const pres=new PptxGenJS();
     pres.layout="LAYOUT_16x9";
-    pres.title="+MARKA · Tablero de Activaciones";
+    const W=10,H=5.625,N="0d0f1a",R="C8102E",WW="ffffff",G="9196ab",D="161829",D2="1e2035";
 
-    const N="1a1a2e",R="C8102E",W="FFFFFF",G="9aa0a6",D="111827";
-
-    // KPIs
-    const actSet=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
-    const nAct=actSet.size;
-    let nPers=0;const pV=new Set();
-    FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV.has(k)){pV.add(k);nPers+=r.hombres+r.mujeres+r.ninos;}});
-    const nUnd=FIL.reduce((s,r)=>s+r.cantidad,0);
-    const nMar=new Set(FIL.map(r=>r.marca).filter(Boolean)).size;
-    const nLoc=new Set(FIL.map(r=>r.local).filter(Boolean)).size;
-
-    function addBar(s){
-      s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
+    function base(s){
+      s.background={color:N};
+      s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.12,h:H,fill:{color:R},line:{color:R}});
     }
-    function addFooter(s){
-      s.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA",{x:0,y:5.38,w:10,h:.24,fontSize:7,color:G,charSpacing:4,align:"center"});
+    function foot(s){
+      s.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA",{x:0,y:H-.26,w:W,h:.26,fontSize:7,color:G,charSpacing:5,align:"center"});
     }
-    function addHeader(s,txt,sub=""){
-      s.addText(txt,{x:.25,y:.15,w:9.5,h:.42,fontSize:10,bold:true,color:G,charSpacing:4});
-      if(sub)s.addText(sub,{x:.25,y:.54,w:9.5,h:.28,fontSize:9,color:"555555"});
+    function lMarka(s,x,y){
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w:.48,h:.38,fill:{color:R},line:{color:R}});
+      s.addText("+",{x,y,w:.48,h:.38,fontSize:16,bold:true,color:WW,align:"center",valign:"middle"});
+      s.addText("MARKA",{x:x+.54,y:y+.04,w:1.2,h:.3,fontSize:16,bold:true,color:WW});
     }
 
-    // ── PORTADA ──
-    const s0=pres.addSlide(); s0.background={color:N};
-    s0.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
-    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.3,w:1.6,h:.55,fill:{color:R},line:{color:R}});
-    s0.addText("+ MARKA",{x:.25,y:.3,w:1.6,h:.55,fontSize:14,bold:true,color:W,align:"center",valign:"middle"});
-    s0.addText("TABLERO DE ACTIVACIONES",{x:.25,y:1.3,w:9,h:.85,fontSize:34,bold:true,color:W,charSpacing:2});
-    s0.addText("Relevamiento de Impulsos en Punto de Venta",{x:.25,y:2.2,w:9,h:.45,fontSize:14,color:R,bold:true});
-    s0.addText(`Fecha: ${new Date().toLocaleDateString("es-PY")}  ·  ${FIL.length} registros`,{x:.25,y:2.75,w:9,h:.35,fontSize:11,color:G});
-    addFooter(s0);
+    // Marcas únicas
+    const marcasU=[...new Set(FIL.map(r=>r.marca).filter(Boolean))];
+    const marcaTit=marcasU.length===1?marcasU[0]:marcasU.slice(0,3).join(" · ");
+    const tiposU=[...new Set(FIL.map(r=>r.tipo).filter(Boolean))];
+    const mesAnio=new Date().toLocaleString("es-PY",{month:"long",year:"numeric"}).toUpperCase();
 
-    // ── KPIs ──
-    const s1=pres.addSlide(); s1.background={color:N}; addBar(s1);
-    addHeader(s1,"RESUMEN EJECUTIVO");
-    const kpis=[["ACTIVACIONES",String(nAct)],[" PERSONAS",String(nPers)],["UNIDADES",String(nUnd)],["MARCAS",String(nMar)],["LOCALES",String(nLoc)]];
-    const kW=1.8,kG=.08;
-    kpis.forEach(([lbl,val],i)=>{
+    // ══ PORTADA ══
+    const s0=pres.addSlide();base(s0);
+    lMarka(s0,.25,.28);
+    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,.06,fill:{color:R},line:{color:R}});
+    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,h:.06,fill:{color:R},line:{color:R}});
+    s0.addText(marcaTit.toUpperCase(),{x:.25,y:1.05,w:9.3,h:.9,fontSize:marcaTit.length>20?26:34,bold:true,color:WW});
+    s0.addText(tiposU.join(" & ").toUpperCase(),{x:.25,y:2.05,w:9,h:.42,fontSize:13,bold:true,color:R,charSpacing:1});
+    s0.addText(mesAnio,{x:.25,y:2.58,w:9,h:.3,fontSize:11,italic:true,color:G});
+    foot(s0);
+
+    // ══ RESUMEN KPIs ══
+    const s1=pres.addSlide();base(s1);
+    s1.addText("RESUMEN EJECUTIVO",{x:.25,y:.16,w:9,h:.34,fontSize:9,bold:true,color:G,charSpacing:5});
+    s1.addShape(pres.shapes.RECTANGLE,{x:.25,y:.5,w:9.5,h:.04,fill:{color:R},line:{color:R}});
+    const aS=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+    let nP=0;const pVK=new Set();
+    FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pVK.has(k)){pVK.add(k);nP+=r.hombres+r.mujeres+r.ninos;}});
+    const nU=FIL.reduce((s,r)=>s+r.cantidad,0);
+    const kArr=[["ACTIVACIONES",String(aS.size)],["PERSONAS",String(nP)],["UNIDADES",String(nU)],
+      ["MARCAS",String(new Set(FIL.map(r=>r.marca).filter(Boolean)).size)],
+      ["LOCALES",String(new Set(FIL.map(r=>r.local).filter(Boolean)).size)]];
+    const kW=1.76,kG=.06;
+    kArr.forEach(([l,v],i)=>{
       const x=.25+i*(kW+kG);
-      s1.addShape(pres.shapes.RECTANGLE,{x,y:.85,w:kW,h:2,fill:{color:D},line:{color:R,pt:1.5}});
-      s1.addText(val,{x,y:1.0,w:kW,h:.95,fontSize:38,bold:true,color:R,align:"center",valign:"middle"});
-      s1.addText(lbl,{x,y:2.05,w:kW,h:.35,fontSize:8,bold:true,color:W,align:"center",charSpacing:2});
+      s1.addShape(pres.shapes.RECTANGLE,{x,y:.66,w:kW,h:1.55,fill:{color:D},line:{color:R,pt:1}});
+      s1.addText(v,{x,y:.7,w:kW,h:.9,fontSize:40,bold:true,color:R,align:"center",valign:"middle",fontFace:"Arial Black"});
+      s1.addText(l,{x,y:1.65,w:kW,h:.28,fontSize:7.5,bold:true,color:WW,align:"center",charSpacing:3});
     });
-
-    // Tabla por supervisor
-    const bySup2={};const sV2=new Set();const pV2=new Set();
+    // Tabla supervisores
+    const bSup={};const sV2=new Set();const pV2=new Set();
     FIL.forEach(r=>{
-      const s=r.supervisor||"—";if(!bySup2[s])bySup2[s]={a:0,p:0,u:0};
+      const s=r.supervisor||"—";if(!bSup[s])bSup[s]={a:0,p:0,u:0};
       const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;
-      if(!sV2.has(k)){sV2.add(k);bySup2[s].a++;}
-      const pk=k+"|p";if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV2.has(pk)){pV2.add(pk);bySup2[s].p+=r.hombres+r.mujeres+r.ninos;}
-      bySup2[s].u+=r.cantidad;
+      if(!sV2.has(k)){sV2.add(k);bSup[s].a++;}
+      const pk=k+"|p";if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV2.has(pk)){pV2.add(pk);bSup[s].p+=r.hombres+r.mujeres+r.ninos;}
+      bSup[s].u+=r.cantidad;
     });
-    const tblData=[
-      [{text:"SUPERVISOR",options:{bold:true,color:W,fill:{color:R},align:"center"}},
-       {text:"ACTIVACIONES",options:{bold:true,color:W,fill:{color:R},align:"center"}},
-       {text:"PERSONAS",options:{bold:true,color:W,fill:{color:R},align:"center"}},
-       {text:"UNIDADES",options:{bold:true,color:W,fill:{color:R},align:"center"}}],
-      ...Object.entries(bySup2).map(([s,v])=>[
-        {text:s,options:{color:W,fill:{color:D}}},
-        {text:String(v.a),options:{color:R,bold:true,fill:{color:D},align:"center"}},
-        {text:String(v.p),options:{color:W,fill:{color:D},align:"center"}},
-        {text:String(v.u),options:{color:W,fill:{color:D},align:"center"}}
-      ])
-    ];
-    s1.addTable(tblData,{x:.25,y:3.1,w:9.5,colW:[4,2,2,1.5],fontSize:10,border:{pt:.5,color:"333355"}});
-    addFooter(s1);
+    const tbl=[[
+      {text:"SUPERVISOR",options:{bold:true,color:WW,fill:{color:R},align:"center",fontSize:8}},
+      {text:"ACTIVACIONES",options:{bold:true,color:WW,fill:{color:R},align:"center",fontSize:8}},
+      {text:"PERSONAS",options:{bold:true,color:WW,fill:{color:R},align:"center",fontSize:8}},
+      {text:"UNIDADES",options:{bold:true,color:WW,fill:{color:R},align:"center",fontSize:8}},
+    ],...Object.entries(bSup).map(([s,d],i)=>{
+      const bg=i%2===0?D:"111827";
+      return[
+        {text:s,options:{color:WW,fill:{color:bg},fontSize:9,bold:true}},
+        {text:String(d.a),options:{color:R,fill:{color:bg},align:"center",fontSize:10,bold:true}},
+        {text:String(d.p),options:{color:WW,fill:{color:bg},align:"center",fontSize:9}},
+        {text:String(d.u),options:{color:WW,fill:{color:bg},align:"center",fontSize:9}},
+      ];
+    })];
+    s1.addTable(tbl,{x:.25,y:2.35,w:9.5,colW:[4.5,1.8,1.8,1.4],fontSize:9,border:{pt:.5,color:"222244"}});
+    foot(s1);
 
-    // ── POR MARCA ──
-    const s2=pres.addSlide(); s2.background={color:N}; addBar(s2);
-    addHeader(s2,"ACTIVACIONES POR MARCA");
-    const bm=contarActs("marca");
-    const bmArr=Object.entries(bm).sort((a,b)=>b[1]-a[1]);
-    const bmMax=Math.max(...bmArr.map(e=>e[1]),1);
-    const barC=["C8102E","E63950","FF6B7A","1a1a2e","2d2d5e","4a4a8a"];
-    bmArr.forEach(([marca,val],i)=>{
-      const y=.95+i*.72;
-      const bw=(val/bmMax)*6;
-      s2.addShape(pres.shapes.RECTANGLE,{x:2.8,y:y+.1,w:bw||.05,h:.48,fill:{color:barC[i%barC.length]},line:{color:barC[i%barC.length]}});
-      s2.addText(marca,{x:.2,y,w:2.5,h:.65,fontSize:11,bold:true,color:W,valign:"middle"});
-      s2.addText(String(val)+" act.",{x:2.85+(bw||.05),y,w:1.5,h:.65,fontSize:13,bold:true,color:R,valign:"middle"});
-    });
-    addFooter(s2);
-
-    // ── TOP PRODUCTOS ──
-    const s3=pres.addSlide(); s3.background={color:N}; addBar(s3);
-    addHeader(s3,"TOP PRODUCTOS VENDIDOS");
-    const pp2={};FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp2[r.producto]=(pp2[r.producto]||0)+r.cantidad;});
-    const topP2=Object.entries(pp2).sort((a,b)=>b[1]-a[1]).slice(0,8);
-    const maxP2=Math.max(...topP2.map(p=>p[1]),1);
-    topP2.forEach(([prod,val],i)=>{
-      const y=.9+i*.55;
-      const bw=(val/maxP2)*5.5;
-      s3.addShape(pres.shapes.RECTANGLE,{x:3.5,y:y+.06,w:bw||.05,h:.4,fill:{color:R},line:{color:R}});
-      s3.addText(`${i+1}. ${prod}`,{x:.2,y,w:3.2,h:.52,fontSize:9.5,bold:true,color:W,valign:"middle"});
-      s3.addText(String(val)+" u.",{x:3.55+(bw||.05),y,w:1.2,h:.52,fontSize:11,bold:true,color:R,valign:"middle"});
-    });
-    addFooter(s3);
-
-    // ── DETALLE ──
-    const s4=pres.addSlide(); s4.background={color:N}; addBar(s4);
-    addHeader(s4,"DETALLE DE ACTIVACIONES",`Mostrando ${Math.min(FIL.length,15)} de ${FIL.length} registros`);
-    const actMap2={};
+    // ══ SLIDES DE ACTIVACIÓN (personas + ventas) ══
+    const actsMap={};
     FIL.forEach(r=>{
-      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}|${r.tipo}`;
-      if(!actMap2[k])actMap2[k]={...r,prods:[],pers:r.hombres+r.mujeres+r.ninos};
-      if(r.producto)actMap2[k].prods.push(`${r.producto}(${r.cantidad})`);
+      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if(!actsMap[k])actsMap[k]={fecha:r.fecha,supervisor:r.supervisor,marca:r.marca,local:r.local,tipo:r.tipo,tematica:r.tematica,hombres:r.hombres,mujeres:r.mujeres,ninos:r.ninos,prods:[],fotos:[]};
+      if(r.producto&&r.cantidad>0)actsMap[k].prods.push({p:r.producto,c:r.cantidad});
+      if(r.evidencia&&r.evidencia.startsWith("http"))actsMap[k].fotos.push(r.evidencia);
     });
-    const actArr2=Object.values(actMap2).slice(0,12);
-    const tDet=[
-      [{text:"FECHA",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
-       {text:"SUPERVISOR",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
-       {text:"MARCA",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
-       {text:"LOCAL",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
-       {text:"TIPO",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
-       {text:"PERS.",options:{bold:true,color:W,fill:{color:R},fontSize:8,align:"center"}},
-       {text:"PRODUCTOS",options:{bold:true,color:W,fill:{color:R},fontSize:8}}],
-      ...actArr2.map((r,i)=>{
-        const bg=i%2===0?D:"0d1424";
-        return[
-          {text:r.fecha||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
-          {text:r.supervisor||"—",options:{color:W,fill:{color:bg},fontSize:7.5,bold:true}},
-          {text:r.marca||"—",options:{color:R,fill:{color:bg},fontSize:7.5,bold:true}},
-          {text:r.local||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
-          {text:r.tipo||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
-          {text:String(r.pers||0),options:{color:W,fill:{color:bg},fontSize:7.5,align:"center"}},
-          {text:(r.prods.slice(0,3).join(", "))||"—",options:{color:G,fill:{color:bg},fontSize:7}},
-        ];
-      })
-    ];
-    s4.addTable(tDet,{x:.15,y:.85,w:9.7,colW:[1.1,1.6,1.3,1.3,1.5,.7,2.2],fontSize:8,rowH:.31,border:{pt:.3,color:"222244"}});
-    addFooter(s4);
 
-    // ── CIERRE ──
-    const sc=pres.addSlide(); sc.background={color:N};
-    sc.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
-    sc.addShape(pres.shapes.RECTANGLE,{x:.25,y:.3,w:1.6,h:.55,fill:{color:R},line:{color:R}});
-    sc.addText("+ MARKA",{x:.25,y:.3,w:1.6,h:.55,fontSize:14,bold:true,color:W,align:"center",valign:"middle"});
-    sc.addText("¡Hacemos que\ntu marca sea +!",{x:.25,y:1.4,w:9.5,h:1.4,fontSize:36,bold:true,color:W,align:"center"});
-    sc.addText("CONTACTO",{x:.25,y:3.2,w:9.5,h:.32,fontSize:9,color:G,charSpacing:4,align:"center"});
-    sc.addText("Diana Moreno  ·  dianam@masmarka.com.py  ·  www.masmarka.com.py",{x:.25,y:3.6,w:9.5,h:.4,fontSize:12,color:W,align:"center"});
-    addFooter(sc);
+    for(const [,a] of Object.entries(actsMap)){
+      // ── SLIDE PERSONAS ──
+      const sA=pres.addSlide();base(sA);
+      sA.addText(`ACTIVACIÓN — ${a.local.toUpperCase()} — ${a.supervisor.toUpperCase()}`,
+        {x:.25,y:.16,w:9.5,h:.4,fontSize:15,bold:true,color:WW});
+      sA.addText(`FECHA: ${a.fecha}`,{x:.25,y:.58,w:9,h:.3,fontSize:12,bold:true,color:R});
+      sA.addShape(pres.shapes.RECTANGLE,{x:.25,y:.9,w:9.5,h:.04,fill:{color:R},line:{color:R}});
+
+      // 3 cajas personas
+      const boxes=[{l:"HOMBRES",v:a.hombres},{l:"MUJERES",v:a.mujeres},{l:"NIÑOS",v:a.ninos}];
+      const bW=2.9,bH=1.75;
+      boxes.forEach((b,i)=>{
+        const x=.25+i*(bW+.12);
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:1.06,w:bW,h:bH,fill:{color:"2a2d3e"},line:{color:"3a3d4e",pt:.5}});
+        sA.addText(String(b.v),{x,y:1.1,w:bW,h:1.1,fontSize:60,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
+        sA.addText(b.l,{x,y:2.22,w:bW,h:.3,fontSize:8,bold:true,color:G,align:"center",charSpacing:4});
+      });
+      // Total
+      const tot=a.hombres+a.mujeres+a.ninos;
+      sA.addShape(pres.shapes.RECTANGLE,{x:.25,y:2.94,w:9.5,h:.42,fill:{color:R},line:{color:R}});
+      sA.addText(`TOTAL: ${tot} PERSONAS`,{x:.25,y:2.94,w:9.5,h:.42,fontSize:13,bold:true,color:WW,align:"center",valign:"middle",charSpacing:2});
+      // Temática
+      sA.addShape(pres.shapes.RECTANGLE,{x:.25,y:3.48,w:9.5,h:.36,fill:{color:D2},line:{color:"2a2d3e",pt:.5}});
+      sA.addText(`TEMÁTICA: ${a.tematica||a.tipo}`,{x:.3,y:3.48,w:9.3,h:.36,fontSize:9,bold:true,color:WW,valign:"middle"});
+      sA.addShape(pres.shapes.RECTANGLE,{x:.25,y:3.95,w:9.5,h:.34,fill:{color:D},line:{color:"2a2d3e",pt:.5}});
+      sA.addText(`MARCA: ${a.marca.toUpperCase()}`,{x:.3,y:3.95,w:4.5,h:.34,fontSize:9,color:R,bold:true,valign:"middle"});
+      sA.addText(`TIPO: ${a.tipo}`,{x:5,y:3.95,w:4.7,h:.34,fontSize:9,color:G,valign:"middle"});
+      foot(sA);
+
+      // ── SLIDE VENTAS ──
+      if(a.prods.length>0){
+        const pd={};a.prods.forEach(p=>{pd[p.p]=(pd[p.p]||0)+p.c;});
+        const pArr=Object.entries(pd).sort((a,b)=>b[1]-a[1]).slice(0,12);
+        const tU=Object.values(pd).reduce((s,v)=>s+v,0);
+        const sV=pres.addSlide();base(sV);
+        sV.addText("VENTAS CONCRETADAS",{x:.25,y:.16,w:7.5,h:.44,fontSize:20,bold:true,color:WW});
+        sV.addText(`${a.local} · ${a.fecha}`,{x:.25,y:.62,w:7,h:.28,fontSize:10,color:G});
+        sV.addText(String(tU),{x:7.9,y:.08,w:1.8,h:.72,fontSize:52,bold:true,color:R,align:"center",fontFace:"Arial Black"});
+        sV.addText("TOTAL VENTAS",{x:7.9,y:.82,w:1.8,h:.2,fontSize:7,color:G,align:"center",charSpacing:3,bold:true});
+        const maxV=Math.max(...pArr.map(p=>p[1]),1);
+        const bH2=.32,bGp=.07,sy=1.1,maxBW=6.5;
+        pArr.forEach(([prod,cant],i)=>{
+          const y=sy+i*(bH2+bGp);const bw=Math.max((cant/maxV)*maxBW,.05);
+          sV.addShape(pres.shapes.RECTANGLE,{x:3.0,y:y+.03,w:bw,h:bH2-.04,fill:{color:R},line:{color:R}});
+          sV.addText(prod,{x:.25,y,w:2.7,h:bH2,fontSize:8.5,color:WW,valign:"middle",bold:true});
+          sV.addText(String(cant),{x:3.05+bw,y,w:.8,h:bH2,fontSize:10,color:R,valign:"middle",bold:true});
+        });
+        foot(sV);
+      }
+    }
+
+    // ══ EVIDENCIAS (3 por slide, placeholder) ══
+    const todasF=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
+    const seenF=new Set();
+    const fotosU=todasF.filter(r=>{if(seenF.has(r.evidencia))return false;seenF.add(r.evidencia);return true;});
+    for(let i=0;i<fotosU.length;i+=3){
+      const lote=fotosU.slice(i,i+3);
+      const sF=pres.addSlide();base(sF);
+      sF.addText("EVIDENCIA FOTOGRÁFICA",{x:.25,y:.16,w:9,h:.38,fontSize:14,bold:true,color:WW});
+      sF.addShape(pres.shapes.RECTANGLE,{x:.25,y:.56,w:9.5,h:.04,fill:{color:R},line:{color:R}});
+      const fW=(9.5-(lote.length-1)*.18)/lote.length;
+      lote.forEach((r,j)=>{
+        const x=.25+j*(fW+.18);
+        sF.addShape(pres.shapes.RECTANGLE,{x,y:.72,w:fW,h:4.0,fill:{color:D2},line:{color:"2a2d3e",pt:.5}});
+        sF.addText("📷",{x,y:2.1,w:fW,h:.5,fontSize:24,align:"center"});
+        sF.addText(`${r.marca}\n${r.local} · ${r.fecha}`,{x,y:4.28,w:fW,h:.5,fontSize:7.5,color:G,align:"center"});
+      });
+      foot(sF);
+    }
+
+    // ══ CIERRE ══
+    const sC=pres.addSlide();base(sC);
+    lMarka(sC,.25,.28);
+    sC.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,h:.06,fill:{color:R},line:{color:R}});
+    sC.addText("MUCHAS GRACIAS",{x:.25,y:1.1,w:9.5,h:1.1,fontSize:50,bold:true,color:WW});
+    sC.addText("Hacemos que tu marca sea +",{x:.25,y:2.3,w:9.5,h:.5,fontSize:16,italic:true,color:G});
+    sC.addText("Trade Marketing  ·  Paraguay",{x:.25,y:4.6,w:9.5,h:.3,fontSize:9,italic:true,color:"5a5f7a"});
+    foot(sC);
 
     const fecha=new Date().toLocaleDateString("es-PY").replace(/\//g,"-");
-    await pres.writeFile({fileName:`MARKA_Activaciones_${fecha}.pptx`});
-    toast("✓ PPT descargado","ok");
-  }catch(e){
-    console.error(e);
-    toast("Error: "+e.message,"err");
-  }
-  ocultarOverlay();
-  btn.disabled=false;
-  btn.innerHTML="⬇ Descargar PPT";
-}
-
-// ═══════════════════════════════════════════════
-// OVERLAY / TOAST
-// ═══════════════════════════════════════════════
-function mostrarOverlay(txt,sub){
-  document.getElementById("overlayTxt").textContent=txt||"";
-  document.getElementById("overlaySub").textContent=sub||"";
-  document.getElementById("overlay").classList.add("on");
-}
-function ocultarOverlay(){ document.getElementById("overlay").classList.remove("on"); }
-let _tt;
-function toast(msg,tipo){
-  const el=document.getElementById("toast");
-  el.textContent=msg;el.className="toast "+(tipo||"ok");
-  clearTimeout(_tt);requestAnimationFrame(()=>el.classList.add("on"));
-  _tt=setTimeout(()=>el.classList.remove("on"),3500);
+    await pres.writeFile({fileName:`${marcasU[0]||"MARKA"}_Activaciones_${fecha}.pptx`});
+    tst("✓ PPT descargado","ok");
+  }catch(e){console.error(e);tst("Error: "+e.message,"er2");}
+  hideOv();
+  document.getElementById("btnP").disabled=false;document.getElementById("btnP").innerHTML="⬇ Exportar PPT";
 }
 </script>
 </body>
