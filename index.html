@@ -497,7 +497,7 @@ async function genPPT(){
     // ══ PORTADA ══
     const s0=pres.addSlide();base(s0);
     lMarka(s0,.25,.28);
-    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,.06,fill:{color:R},line:{color:R}});
+    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,h:.06,fill:{color:R},line:{color:R}});
     s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.88,w:1.9,h:.06,fill:{color:R},line:{color:R}});
     s0.addText(marcaTit.toUpperCase(),{x:.25,y:1.05,w:9.3,h:.9,fontSize:marcaTit.length>20?26:34,bold:true,color:WW});
     s0.addText(tiposU.join(" & ").toUpperCase(),{x:.25,y:2.05,w:9,h:.42,fontSize:13,bold:true,color:R,charSpacing:1});
