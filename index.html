@@ -261,13 +261,30 @@ setInterval(()=>load(false),5*60*1000);
 async function load(m){
   setSt("ld","conectando...");showOv("Cargando datos...","Leyendo Hoja 1");
   try{
-    const r=await fetch(CSV+"&t="+Date.now());
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    RAW=pCSV(await r.text());
+    // Intentar fetch directo primero
+    let txt=null;
+    try{
+      const r=await fetch(CSV+"&t="+Date.now());
+      if(r.ok) txt=await r.text();
+    }catch(e1){}
+
+    // Si falla, usar proxy CORS
+    if(!txt){
+      const proxy="https://corsproxy.io/?"+encodeURIComponent(CSV+"&t="+Date.now());
+      const r2=await fetch(proxy);
+      if(!r2.ok)throw new Error("HTTP "+r2.status);
+      txt=await r2.text();
+    }
+
+    RAW=pCSV(txt);
     fillF();apply();
     setSt("ok","act. "+new Date().toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"}));
     if(m)tst("✓ "+RAW.length+" registros","ok");
-  }catch(e){setSt("er","sin conexión");tst("Error: "+e.message,"er2");}
+  }catch(e){
+    setSt("er","sin conexión");
+    tst("Error: "+e.message,"er2");
+    console.error("Load error:",e);
+  }
   hideOv();
 }
 function setSt(s,t){
