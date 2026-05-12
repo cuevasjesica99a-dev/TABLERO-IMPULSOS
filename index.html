@@ -250,7 +250,7 @@ tbody td{padding:8px 12px;vertical-align:middle}
 </div>
 
 <script>
-const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
+const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhClcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
 let RAW=[],FIL=[],CH={},TAB=0;
 const PAL=["#C8102E","#0d0f1a","#10b981","#3b82f6","#f59e0b","#7c3aed","#0891b2","#db2777","#059669","#d97706"];
 const PALB=PAL.map(c=>c+"cc");
@@ -260,30 +260,33 @@ setInterval(()=>load(false),5*60*1000);
 
 async function load(m){
   setSt("ld","conectando...");showOv("Cargando datos...","Leyendo Hoja 1");
-  try{
-    // Intentar fetch directo primero
-    let txt=null;
+  // Intentar con 3 métodos distintos
+  const urls=[
+    CSV+"&t="+Date.now(),
+    "https://corsproxy.io/?"+encodeURIComponent(CSV),
+    "https://api.allorigins.win/raw?url="+encodeURIComponent(CSV),
+  ];
+  let txt=null,lastErr="";
+  for(const url of urls){
     try{
-      const r=await fetch(CSV+"&t="+Date.now());
-      if(r.ok) txt=await r.text();
-    }catch(e1){}
-
-    // Si falla, usar proxy CORS
-    if(!txt){
-      const proxy="https://corsproxy.io/?"+encodeURIComponent(CSV+"&t="+Date.now());
-      const r2=await fetch(proxy);
-      if(!r2.ok)throw new Error("HTTP "+r2.status);
-      txt=await r2.text();
-    }
-
+      const r=await fetch(url,{cache:"no-store"});
+      if(r.ok){txt=await r.text();break;}
+    }catch(e){lastErr=e.message;}
+  }
+  if(!txt){
+    setSt("er","sin conexión");
+    tst("No se pudo conectar: "+lastErr,"er2");
+    hideOv();return;
+  }
+  try{
     RAW=pCSV(txt);
+    if(!RAW.length) throw new Error("Sin datos en la hoja");
     fillF();apply();
     setSt("ok","act. "+new Date().toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"}));
-    if(m)tst("✓ "+RAW.length+" registros","ok");
+    if(m)tst("✓ "+RAW.length+" registros cargados","ok");
   }catch(e){
-    setSt("er","sin conexión");
-    tst("Error: "+e.message,"er2");
-    console.error("Load error:",e);
+    setSt("er","error");tst("Error al procesar: "+e.message,"er2");
+    console.error(e);
   }
   hideOv();
 }
