@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>+MARKA · Tablero de Activaciones</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rojo:#C8102E;--oscuro:#1a1a2e;--blanco:#ffffff;
+  --gris1:#f4f5f7;--gris2:#e8eaed;--gris3:#9aa0a6;--gris4:#5f6368;
+  --verde:#1e7e34;--amarillo:#f59e0b;
+  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.08);
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f1f3f4;color:#202124;min-height:100vh}
+
+/* ── HEADER ── */
+.header{background:var(--oscuro);padding:0 28px;height:60px;display:flex;
+  align-items:center;gap:16px;position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-badge{background:var(--rojo);color:#fff;font-weight:900;font-size:15px;
+  padding:5px 12px;border-radius:7px;letter-spacing:.5px}
+.logo-sub{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.header-title{color:#fff;font-size:1rem;font-weight:700;margin-left:8px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn-ppt{background:var(--rojo);color:#fff;border:none;padding:8px 18px;border-radius:8px;
+  font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:background .15s;white-space:nowrap}
+.btn-ppt:hover{background:#a00d23}
+.btn-ppt:disabled{opacity:.5;cursor:not-allowed}
+.btn-refresh{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);
+  padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-refresh:hover{background:rgba(255,255,255,.2)}
+
+/* ── FILTROS ── */
+.filtros-bar{background:#fff;border-bottom:1px solid var(--gris2);padding:12px 28px;
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.filtro-grupo{display:flex;flex-direction:column;gap:4px}
+.filtro-grupo label{font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--gris4)}
+.filtro-grupo select,.filtro-grupo input{
+  padding:7px 12px;border:1.5px solid var(--gris2);border-radius:7px;
+  font-size:.85rem;background:var(--gris1);color:#202124;min-width:160px;
+  appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer}
+.filtro-grupo select:focus,.filtro-grupo input:focus{
+  outline:none;border-color:var(--oscuro)}
+.btn-limpiar{margin-top:18px;padding:7px 14px;background:var(--gris2);border:none;
+  border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--gris4)}
+.btn-limpiar:hover{background:#d0d3d9}
+
+/* ── MAIN ── */
+.main{max-width:1400px;margin:0 auto;padding:22px 24px}
+
+/* ── KPIs ── */
+.kpis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.kpi-card{background:#fff;border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow);border-left:4px solid var(--rojo);position:relative;overflow:hidden}
+.kpi-card::after{content:'';position:absolute;right:-10px;top:-10px;
+  width:60px;height:60px;border-radius:50%;background:rgba(200,16,46,.06)}
+.kpi-label{font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gris4);margin-bottom:8px}
+.kpi-valor{font-size:2rem;font-weight:900;color:var(--oscuro);line-height:1}
+.kpi-sub{font-size:.72rem;color:var(--gris3);margin-top:5px}
+
+/* ── GRIDS DE GRÁFICOS ── */
+.charts-row{display:grid;gap:14px;margin-bottom:14px}
+.charts-row.c2{grid-template-columns:1fr 1fr}
+.charts-row.c3{grid-template-columns:1fr 1fr 1fr}
+.charts-row.c1{grid-template-columns:1fr}
+@media(max-width:900px){.charts-row.c2,.charts-row.c3{grid-template-columns:1fr}}
+
+.chart-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.chart-card h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gris4);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px}
+.chart-card h3 span{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--rojo)}
+.chart-wrap{position:relative;height:220px}
+canvas{max-height:100%}
+
+/* ── TABLA ── */
+.tabla-card{background:#fff;border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);margin-bottom:14px}
+.tabla-card h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gris4);margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between}
+.tabla-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead tr{background:var(--oscuro)}
+thead th{color:#fff;padding:10px 12px;text-align:left;font-size:.72rem;
+  font-weight:700;letter-spacing:.06em;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--gris2);transition:background .12s}
+tbody tr:hover{background:var(--gris1)}
+tbody td{padding:9px 12px;color:#202124;vertical-align:middle}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;
+  font-size:.7rem;font-weight:700;white-space:nowrap}
+.badge-verde{background:#e6f4ea;color:#1e7e34}
+.badge-rojo{background:#fce8ec;color:var(--rojo)}
+.badge-azul{background:#e8f0fe;color:#1a73e8}
+.evidencia-link{color:var(--rojo);text-decoration:none;font-weight:600;font-size:.8rem}
+.evidencia-link:hover{text-decoration:underline}
+
+/* ── FOTOS GRID ── */
+.fotos-section{background:#fff;border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);margin-bottom:14px}
+.fotos-section h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gris4);margin-bottom:14px}
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.foto-item{border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:var(--gris2);
+  position:relative;cursor:pointer}
+.foto-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.foto-item:hover img{transform:scale(1.04)}
+.foto-item .foto-caption{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));
+  color:#fff;font-size:.68rem;padding:18px 8px 6px;font-weight:600}
+.foto-placeholder{width:100%;height:100%;display:flex;align-items:center;
+  justify-content:center;font-size:2rem;color:var(--gris3)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:60px 20px;color:var(--gris3)}
+.empty-ico{font-size:3rem;margin-bottom:12px}
+.empty p{font-size:.95rem;font-weight:500}
+
+/* ── LOADING ── */
+.overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  gap:14px;z-index:999}
+.overlay.on{display:flex}
+.spin{width:44px;height:44px;border:4px solid var(--gris2);
+  border-top-color:var(--rojo);border-radius:50%;animation:giro .8s linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+.overlay-txt{font-weight:700;color:var(--oscuro)}
+.overlay-sub{font-size:.82rem;color:var(--gris3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;padding:12px 20px;border-radius:10px;
+  color:#fff;font-weight:600;font-size:.88rem;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;
+  transform:translateY(10px);transition:all .3s;z-index:9999;pointer-events:none}
+.toast.on{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--verde)}.toast.err{background:var(--rojo)}
+
+/* ── MODAL FOTO ── */
+.modal-foto{position:fixed;inset:0;background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-foto.on{display:flex}
+.modal-foto img{max-width:90vw;max-height:90vh;border-radius:10px;
+  box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.modal-foto-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,.15);
+  color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:22px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+  <div class="spin"></div>
+  <div class="overlay-txt" id="overlayTxt">Cargando datos...</div>
+  <div class="overlay-sub" id="overlaySub"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-foto" id="modalFoto" onclick="cerrarFoto(event)">
+  <button class="modal-foto-close" onclick="document.getElementById('modalFoto').classList.remove('on')">✕</button>
+  <img id="modalFotoImg" src="" alt="">
+</div>
+
+<header class="header">
+  <div class="logo">
+    <span class="logo-badge">+MARKA</span>
+    <span class="logo-sub">IMPULSOS</span>
+  </div>
+  <span class="header-title">Tablero de Activaciones</span>
+  <div class="header-right">
+    <button class="btn-refresh" onclick="cargarDatos()">↻ Actualizar</button>
+    <button class="btn-ppt" id="btnPPT" onclick="generarPPT()">
+      ⬇ Descargar PPT
+    </button>
+  </div>
+</header>
+
+<div class="filtros-bar">
+  <div class="filtro-grupo">
+    <label>Supervisor</label>
+    <select id="fSupervisor" onchange="aplicarFiltros()">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <div class="filtro-grupo">
+    <label>Marca</label>
+    <select id="fMarca" onchange="aplicarFiltros()">
+      <option value="">Todas</option>
+    </select>
+  </div>
+  <div class="filtro-grupo">
+    <label>Local</label>
+    <select id="fLocal" onchange="aplicarFiltros()">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <div class="filtro-grupo">
+    <label>Tipo Activación</label>
+    <select id="fTipo" onchange="aplicarFiltros()">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <div class="filtro-grupo">
+    <label>Fecha desde</label>
+    <input type="date" id="fFechaDesde" onchange="aplicarFiltros()">
+  </div>
+  <div class="filtro-grupo">
+    <label>Fecha hasta</label>
+    <input type="date" id="fFechaHasta" onchange="aplicarFiltros()">
+  </div>
+  <button class="btn-limpiar" onclick="limpiarFiltros()">✕ Limpiar</button>
+</div>
+
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpis-grid" id="kpisGrid"></div>
+
+  <!-- Gráficos fila 1 -->
+  <div class="charts-row c2" id="chartsRow1">
+    <div class="chart-card">
+      <h3><span></span>Activaciones por Marca</h3>
+      <div class="chart-wrap"><canvas id="chartMarca"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><span></span>Tipo de Activación</h3>
+      <div class="chart-wrap"><canvas id="chartTipo"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Gráficos fila 2 -->
+  <div class="charts-row c2" id="chartsRow2">
+    <div class="chart-card">
+      <h3><span></span>Top Productos Vendidos</h3>
+      <div class="chart-wrap"><canvas id="chartProductos"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3><span></span>Personas Abordadas por Supervisor</h3>
+      <div class="chart-wrap"><canvas id="chartPersonas"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Tabla detalle -->
+  <div class="tabla-card">
+    <h3>
+      Detalle de Activaciones
+      <span id="countLabel" style="font-weight:400;font-size:.78rem;color:var(--gris3)"></span>
+    </h3>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Supervisor</th>
+            <th>Marca</th>
+            <th>Local</th>
+            <th>Tipo</th>
+            <th>Temática</th>
+            <th>H</th><th>M</th><th>N</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Evidencia</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Evidencias fotográficas -->
+  <div class="fotos-section">
+    <h3>Evidencias Fotográficas</h3>
+    <div class="fotos-grid" id="fotosGrid"></div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
+const CSV_URL_DIRECTA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
+
+// URL pública CSV de la hoja
+const CSV_URL = CSV_URL_DIRECTA;
+
+let DATOS_RAW = [];   // todos los datos del sheet
+let DATOS_FIL = [];   // datos filtrados
+let CHARTS    = {};   // instancias de Chart.js
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", cargarDatos);
+
+async function cargarDatos() {
+  mostrarOverlay("Cargando datos...", "Leyendo Google Sheets");
+  try {
+    const resp = await fetch(CSV_URL + "&t=" + Date.now());
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const txt  = await resp.text();
+    DATOS_RAW  = parsearCSV(txt);
+    poblarFiltros();
+    aplicarFiltros();
+    toast("✓ Datos actualizados", "ok");
+  } catch(e) {
+    toast("Error al cargar datos: " + e.message, "err");
+    console.error(e);
+  }
+  ocultarOverlay();
+}
+
+// ─────────────────────────────────────────────
+// PARSEAR CSV
+// ─────────────────────────────────────────────
+function parsearCSV(txt) {
+  const lineas = txt.trim().split(/\r?\n/);
+  if (lineas.length < 2) return [];
+  // saltar encabezado (fila 0)
+  return lineas.slice(1).map(l => {
+    const cols = parsearLineaCSV(l);
+    return {
+      fecha:     limpiar(cols[0]),
+      supervisor:limpiar(cols[1]),
+      marca:     limpiar(cols[2]),
+      local:     limpiar(cols[3]),
+      tipo:      limpiar(cols[4]),
+      tematica:  limpiar(cols[5]),
+      hombres:   numOr0(cols[6]),
+      mujeres:   numOr0(cols[7]),
+      ninos:     numOr0(cols[8]),
+      producto:  limpiar(cols[9]),
+      cantidad:  numOr0(cols[10]),
+      evidencia: limpiar(cols[11]),
+    };
+  }).filter(r => r.supervisor || r.marca); // excluir filas vacías
+}
+
+function parsearLineaCSV(line) {
+  const res = []; let cur = ""; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { res.push(cur); cur = ""; continue; }
+    cur += c;
+  }
+  res.push(cur);
+  return res;
+}
+
+function limpiar(v) { return (v||"").replace(/^"|"$/g,"").trim(); }
+function numOr0(v)  { const n = parseFloat(limpiar(v)); return isNaN(n) ? 0 : n; }
+
+// ─────────────────────────────────────────────
+// FILTROS
+// ─────────────────────────────────────────────
+function poblarFiltros() {
+  const uniq = (arr, k) => [...new Set(arr.map(r=>r[k]).filter(Boolean))].sort();
+  poblarSelect("fSupervisor", uniq(DATOS_RAW,"supervisor"));
+  poblarSelect("fMarca",      uniq(DATOS_RAW,"marca"));
+  poblarSelect("fLocal",      uniq(DATOS_RAW,"local"));
+  poblarSelect("fTipo",       uniq(DATOS_RAW,"tipo"));
+}
+
+function poblarSelect(id, vals) {
+  const sel = document.getElementById(id);
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos</option>';
+  vals.forEach(v => {
+    const o = document.createElement("option");
+    o.value = o.textContent = v;
+    if (v === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function aplicarFiltros() {
+  const fSup  = document.getElementById("fSupervisor").value;
+  const fMar  = document.getElementById("fMarca").value;
+  const fLoc  = document.getElementById("fLocal").value;
+  const fTip  = document.getElementById("fTipo").value;
+  const fDes  = document.getElementById("fFechaDesde").value;
+  const fHas  = document.getElementById("fFechaHasta").value;
+
+  DATOS_FIL = DATOS_RAW.filter(r => {
+    if (fSup && r.supervisor !== fSup) return false;
+    if (fMar && r.marca      !== fMar) return false;
+    if (fLoc && r.local      !== fLoc) return false;
+    if (fTip && r.tipo       !== fTip) return false;
+    if (fDes || fHas) {
+      const fd = parseFecha(r.fecha);
+      if (fDes && fd && fd < new Date(fDes)) return false;
+      if (fHas && fd && fd > new Date(fHas+"T23:59:59")) return false;
+    }
+    return true;
+  });
+
+  renderTodo();
+}
+
+function parseFecha(str) {
+  // formato dd/MM/yyyy
+  const p = str.split("/");
+  if (p.length===3) return new Date(p[2], p[1]-1, p[0]);
+  return null;
+}
+
+function limpiarFiltros() {
+  ["fSupervisor","fMarca","fLocal","fTipo"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("fFechaDesde").value="";
+  document.getElementById("fFechaHasta").value="";
+  aplicarFiltros();
+}
+
+// ─────────────────────────────────────────────
+// RENDERIZADO GENERAL
+// ─────────────────────────────────────────────
+function renderTodo() {
+  renderKPIs();
+  renderCharts();
+  renderTabla();
+  renderFotos();
+}
+
+// ─────────────────────────────────────────────
+// KPIs
+// ─────────────────────────────────────────────
+function renderKPIs() {
+  // activaciones únicas = combinación fecha+supervisor+marca+local
+  const activacionesSet = new Set(DATOS_FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+  const totalActivaciones = activacionesSet.size;
+
+  // personas: solo filas con valor > 0 en hombres/mujeres/ninos (evitar duplicados)
+  const personasSet = new Set();
+  let totalPersonas = 0;
+  DATOS_FIL.forEach(r => {
+    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if ((r.hombres > 0 || r.mujeres > 0 || r.ninos > 0) && !personasSet.has(key)) {
+      personasSet.add(key);
+      totalPersonas += r.hombres + r.mujeres + r.ninos;
+    }
+  });
+
+  // productos vendidos
+  const totalUnidades = DATOS_FIL.reduce((s,r)=>s+r.cantidad,0);
+
+  // marcas únicas
+  const marcasUnicas = new Set(DATOS_FIL.map(r=>r.marca).filter(Boolean)).size;
+
+  // locales únicos
+  const localesUnicos = new Set(DATOS_FIL.map(r=>r.local).filter(Boolean)).size;
+
+  const kpis = [
+    { label:"Activaciones", valor: totalActivaciones, sub:"eventos registrados", color:"C8102E" },
+    { label:"Personas Abordadas", valor: totalPersonas, sub:"total abordados", color:"1a1a2e" },
+    { label:"Unidades Vendidas", valor: totalUnidades, sub:"productos concretados", color:"1e7e34" },
+    { label:"Marcas Trabajadas", valor: marcasUnicas, sub:"marcas activas", color:"1a73e8" },
+    { label:"Locales Visitados", valor: localesUnicos, sub:"puntos de venta", color:"f59e0b" },
+  ];
+
+  document.getElementById("kpisGrid").innerHTML = kpis.map(k=>`
+    <div class="kpi-card" style="border-left-color:#${k.color}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-valor" style="color:#${k.color}">${k.valor.toLocaleString("es-PY")}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join("");
+}
+
+// ─────────────────────────────────────────────
+// GRÁFICOS
+// ─────────────────────────────────────────────
+const COLORES = ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b","7c3aed","0891b2","db2777","059669","d97706"];
+const C = n => "#" + COLORES[n % COLORES.length];
+
+function renderCharts() {
+  // 1. Por marca
+  const porMarca = contarPor(DATOS_FIL, "marca");
+  dibujar("chartMarca", "bar", Object.keys(porMarca), Object.values(porMarca),
+    "Activaciones", COLORES.map(c=>"#"+c));
+
+  // 2. Por tipo
+  const porTipo = contarPor(DATOS_FIL, "tipo");
+  dibujar("chartTipo", "doughnut", Object.keys(porTipo), Object.values(porTipo),
+    "Activaciones", COLORES.map(c=>"#"+c));
+
+  // 3. Top productos
+  const porProd = {};
+  DATOS_FIL.forEach(r => {
+    if (!r.producto) return;
+    porProd[r.producto] = (porProd[r.producto]||0) + r.cantidad;
+  });
+  const topProds = Object.entries(porProd).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  dibujar("chartProductos","bar",topProds.map(p=>p[0]),topProds.map(p=>p[1]),
+    "Unidades","#C8102E");
+
+  // 4. Personas por supervisor
+  const porSup = {};
+  const supVisto = new Set();
+  DATOS_FIL.forEach(r => {
+    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if ((r.hombres > 0 || r.mujeres > 0 || r.ninos > 0) && !supVisto.has(key)) {
+      supVisto.add(key);
+      const s = r.supervisor || "Sin nombre";
+      porSup[s] = (porSup[s]||0) + r.hombres + r.mujeres + r.ninos;
+    }
+  });
+  dibujar("chartPersonas","bar",Object.keys(porSup),Object.values(porSup),
+    "Personas","#1a1a2e");
+}
+
+function contarPor(datos, campo) {
+  // cuenta activaciones únicas por campo
+  const set = {};
+  const visto = new Set();
+  datos.forEach(r => {
+    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if (r[campo] && !visto.has(campo+key)) {
+      visto.add(campo+key);
+      set[r[campo]] = (set[r[campo]]||0)+1;
+    }
+  });
+  return set;
+}
+
+function dibujar(id, tipo, labels, datos, label, color) {
+  if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; }
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  const colores = Array.isArray(color) ? color : labels.map((_,i)=>C(i));
+  CHARTS[id] = new Chart(ctx, {
+    type: tipo,
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data: datos,
+        backgroundColor: tipo==="bar" ? colores.map(c=>c+"cc") : colores,
+        borderColor:     tipo==="bar" ? colores : "#fff",
+        borderWidth:     tipo==="bar" ? 0 : 2,
+        borderRadius:    tipo==="bar" ? 5 : 0,
+      }]
+    },
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ display: tipo!=="bar", position:"right",
+          labels:{ font:{size:11}, boxWidth:12, padding:10 }},
+        tooltip:{ callbacks:{
+          label: ctx => ` ${ctx.parsed.y ?? ctx.parsed}: ${ctx.dataset.label}`
+        }}
+      },
+      scales: tipo==="bar" ? {
+        y:{ beginAtZero:true, grid:{color:"#e8eaed"},
+            ticks:{color:"#5f6368",font:{size:11}}},
+        x:{ grid:{display:false},
+            ticks:{color:"#5f6368",font:{size:11},maxRotation:30}}
+      } : {},
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// TABLA
+// ─────────────────────────────────────────────
+function renderTabla() {
+  const tbody = document.getElementById("tablaBody");
+  document.getElementById("countLabel").textContent =
+    `${DATOS_FIL.length} registro${DATOS_FIL.length!==1?"s":""}`;
+
+  if (!DATOS_FIL.length) {
+    tbody.innerHTML = `<tr><td colspan="12">
+      <div class="empty"><div class="empty-ico">📊</div><p>Sin datos para los filtros seleccionados</p></div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = DATOS_FIL.map(r => `
+    <tr>
+      <td>${r.fecha||"—"}</td>
+      <td>${r.supervisor||"—"}</td>
+      <td><span class="badge badge-rojo">${r.marca||"—"}</span></td>
+      <td>${r.local||"—"}</td>
+      <td><span class="badge badge-azul">${r.tipo||"—"}</span></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.tematica}">${r.tematica||"—"}</td>
+      <td>${r.hombres||""}</td>
+      <td>${r.mujeres||""}</td>
+      <td>${r.ninos||""}</td>
+      <td>${r.producto||"—"}</td>
+      <td>${r.cantidad||""}</td>
+      <td>${r.evidencia
+        ? `<a class="evidencia-link" href="${r.evidencia}" target="_blank">📎 Ver</a>`
+        : "—"}</td>
+    </tr>`).join("");
+}
+
+// ─────────────────────────────────────────────
+// FOTOS
+// ─────────────────────────────────────────────
+function renderFotos() {
+  const grid = document.getElementById("fotosGrid");
+  const conEvidencia = DATOS_FIL.filter(r => r.evidencia && r.evidencia.startsWith("http"));
+
+  if (!conEvidencia.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-ico">📷</div><p>Sin evidencias fotográficas</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = conEvidencia.map(r => `
+    <div class="foto-item" onclick="abrirFoto('${r.evidencia}')">
+      <img src="${r.evidencia.replace('/view','/preview')}"
+           onerror="this.parentElement.innerHTML='<div class=foto-placeholder>🖼️</div><div class=foto-caption>${r.marca} · ${r.local}</div>'"
+           alt="Evidencia">
+      <div class="foto-caption">${r.marca} · ${r.local} · ${r.fecha}</div>
+    </div>`).join("");
+}
+
+function abrirFoto(url) {
+  document.getElementById("modalFotoImg").src = url;
+  document.getElementById("modalFoto").classList.add("on");
+}
+function cerrarFoto(e) {
+  if (e.target === document.getElementById("modalFoto")) {
+    document.getElementById("modalFoto").classList.remove("on");
+  }
+}
+
+// ─────────────────────────────────────────────
+// GENERAR PPT
+// ─────────────────────────────────────────────
+async function generarPPT() {
+  if (!DATOS_FIL.length) { toast("Sin datos para exportar","err"); return; }
+  const btn = document.getElementById("btnPPT");
+  btn.disabled = true; btn.textContent = "⏳ Generando...";
+  mostrarOverlay("Generando presentación...","Esto puede tomar unos segundos");
+
+  try {
+    const pres = new PptxGenJS();
+    pres.layout  = "LAYOUT_16x9";
+    pres.title   = "+MARKA · Relevamiento de Activaciones";
+    pres.author  = "+MARKA";
+
+    const NEGRO  = "1a1a2e";
+    const ROJO   = "C8102E";
+    const BLANCO = "FFFFFF";
+    const GRIS   = "9aa0a6";
+
+    // ── SLIDE 1: PORTADA ─────────────────────
+    const s1 = pres.addSlide();
+    s1.background = { color: NEGRO };
+
+    // Acento rojo izquierda
+    s1.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+
+    // Logo +MARKA
+    s1.addShape(pres.shapes.RECTANGLE, { x:0.45, y:0.45, w:1.4, h:0.55, fill:{color:ROJO}, line:{color:ROJO} });
+    s1.addText("+ MARKA", { x:0.45, y:0.45, w:1.4, h:0.55, fontSize:13, bold:true, color:BLANCO, align:"center", valign:"middle", margin:0 });
+
+    s1.addText("TABLERO DE ACTIVACIONES", {
+      x:0.5, y:1.5, w:8, h:0.8, fontSize:32, bold:true, color:BLANCO, charSpacing:3
+    });
+    s1.addText("Relevamiento de Impulsos · +MARKA", {
+      x:0.5, y:2.35, w:8, h:0.5, fontSize:14, color:ROJO, bold:true
+    });
+    s1.addText(`Trade Marketing  ·  Paraguay`, {
+      x:0.5, y:2.9, w:8, h:0.4, fontSize:11, color:GRIS
+    });
+    s1.addText(`Fecha de generación: ${new Date().toLocaleDateString("es-PY")}`, {
+      x:0.5, y:3.4, w:8, h:0.35, fontSize:10, color:GRIS
+    });
+    s1.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", {
+      x:0.5, y:5.1, w:9, h:0.35, fontSize:9, color:GRIS, charSpacing:4, align:"center"
+    });
+
+    // ── SLIDE 2: KPIs RESUMEN ────────────────
+    const s2 = pres.addSlide();
+    s2.background = { color: NEGRO };
+    s2.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+
+    s2.addText("RESUMEN DE ACTIVACIONES", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
+
+    // Calcular KPIs
+    const actSet = new Set(DATOS_FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+    const totalAct = actSet.size;
+    let totalPers = 0; const persVisto = new Set();
+    DATOS_FIL.forEach(r => {
+      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persVisto.has(key)){
+        persVisto.add(key); totalPers+=r.hombres+r.mujeres+r.ninos;
+      }
+    });
+    const totalUnd = DATOS_FIL.reduce((s,r)=>s+r.cantidad,0);
+    const marcasU  = new Set(DATOS_FIL.map(r=>r.marca).filter(Boolean)).size;
+    const localesU = new Set(DATOS_FIL.map(r=>r.local).filter(Boolean)).size;
+
+    const kpiSlide = [
+      { label:"ACTIVACIONES",     valor:totalAct,   sub:"eventos registrados" },
+      { label:"PERSONAS",         valor:totalPers,  sub:"abordadas" },
+      { label:"UNIDADES",         valor:totalUnd,   sub:"vendidas" },
+      { label:"MARCAS",           valor:marcasU,    sub:"trabajadas" },
+      { label:"LOCALES",          valor:localesU,   sub:"visitados" },
+    ];
+
+    const kColW = 1.8, kColGap = 0.05;
+    kpiSlide.forEach((k,i) => {
+      const xk = 0.3 + i*(kColW+kColGap);
+      s2.addShape(pres.shapes.RECTANGLE, { x:xk, y:0.85, w:kColW, h:2.0, fill:{color:"111827"}, line:{color:ROJO,pt:1.5} });
+      s2.addText(String(k.valor), { x:xk, y:1.0, w:kColW, h:0.95, fontSize:38, bold:true, color:ROJO, align:"center", valign:"middle" });
+      s2.addText(k.label, { x:xk, y:2.05, w:kColW, h:0.35, fontSize:8, bold:true, color:BLANCO, align:"center", charSpacing:2 });
+      s2.addText(k.sub,   { x:xk, y:2.4,  w:kColW, h:0.3,  fontSize:8, color:GRIS, align:"center" });
+    });
+
+    // Tabla resumen por supervisor (debajo de KPIs)
+    const porSup2 = {};
+    const supVisto2 = new Set();
+    DATOS_FIL.forEach(r => {
+      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if(!porSup2[r.supervisor]) porSup2[r.supervisor]={act:0,pers:0,und:0};
+      if(!supVisto2.has(key)){supVisto2.add(key);porSup2[r.supervisor].act++;}
+      const pk=`${key}|pers`;
+      if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!supVisto2.has(pk)){
+        supVisto2.add(pk);porSup2[r.supervisor].pers+=r.hombres+r.mujeres+r.ninos;
+      }
+      porSup2[r.supervisor].und += r.cantidad;
+    });
+
+    const tabData2 = [
+      [
+        {text:"SUPERVISOR",   options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
+        {text:"ACTIVACIONES", options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
+        {text:"PERSONAS",     options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
+        {text:"UNIDADES",     options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
+      ],
+      ...Object.entries(porSup2).map(([s,v])=>[
+        {text:s||"—",    options:{color:BLANCO,fill:{color:"111827"}}},
+        {text:String(v.act),  options:{color:ROJO,bold:true,fill:{color:"111827"},align:"center"}},
+        {text:String(v.pers), options:{color:BLANCO,fill:{color:"111827"},align:"center"}},
+        {text:String(v.und),  options:{color:BLANCO,fill:{color:"111827"},align:"center"}},
+      ])
+    ];
+    s2.addTable(tabData2, { x:0.3, y:3.05, w:9.4, colW:[4,2,2,1.4], fontSize:10,
+      border:{pt:0.5,color:"333355"} });
+
+    s2.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+
+    // ── SLIDE 3: POR MARCA ───────────────────
+    const s3 = pres.addSlide();
+    s3.background = { color: NEGRO };
+    s3.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+    s3.addText("ACTIVACIONES POR MARCA", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
+
+    const porMarca3 = {};
+    const marcaVisto = new Set();
+    DATOS_FIL.forEach(r => {
+      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if(r.marca&&!marcaVisto.has(key)){marcaVisto.add(key);porMarca3[r.marca]=(porMarca3[r.marca]||0)+1;}
+    });
+
+    const marcasArr = Object.entries(porMarca3).sort((a,b)=>b[1]-a[1]);
+    const maxVal = Math.max(...marcasArr.map(m=>m[1]),1);
+    const barColors3 = ["C8102E","E63950","FF6B7A","1a1a2e","2d2d5e","4a4a8a"];
+
+    marcasArr.forEach(([marca,val],i) => {
+      const y = 0.9 + i*0.75;
+      const bw = (val/maxVal)*6.5;
+      s3.addShape(pres.shapes.RECTANGLE, { x:2.8, y:y+0.07, w:bw, h:0.5, fill:{color:barColors3[i%barColors3.length]}, line:{color:barColors3[i%barColors3.length]} });
+      s3.addText(marca, { x:0.3, y:y, w:2.4, h:0.65, fontSize:11, bold:true, color:BLANCO, valign:"middle" });
+      s3.addText(String(val), { x:2.8+bw+0.1, y:y, w:0.6, h:0.65, fontSize:14, bold:true, color:ROJO, valign:"middle" });
+    });
+
+    s3.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+
+    // ── SLIDE 4: TOP PRODUCTOS ───────────────
+    const s4 = pres.addSlide();
+    s4.background = { color: NEGRO };
+    s4.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+    s4.addText("TOP PRODUCTOS VENDIDOS", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
+
+    const porProd4 = {};
+    DATOS_FIL.forEach(r => { if(r.producto) porProd4[r.producto]=(porProd4[r.producto]||0)+r.cantidad; });
+    const topProd4 = Object.entries(porProd4).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const maxP4 = Math.max(...topProd4.map(p=>p[1]),1);
+
+    topProd4.forEach(([prod,val],i) => {
+      const y = 0.85 + i*0.58;
+      const bw = (val/maxP4)*5.8;
+      s4.addShape(pres.shapes.RECTANGLE, { x:3.2, y:y+0.06, w:bw||0.1, h:0.42, fill:{color:"C8102E"}, line:{color:"C8102E"} });
+      s4.addText(`${i+1}. ${prod}`, { x:0.3, y:y, w:2.8, h:0.55, fontSize:9.5, bold:true, color:BLANCO, valign:"middle" });
+      s4.addText(String(val)+" u.", { x:3.2+(bw||0.1)+0.12, y:y, w:1.2, h:0.55, fontSize:11, bold:true, color:ROJO, valign:"middle" });
+    });
+
+    s4.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+
+    // ── SLIDE 5: DETALLE DE ACTIVACIONES ─────
+    const s5 = pres.addSlide();
+    s5.background = { color: NEGRO };
+    s5.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+    s5.addText("DETALLE DE ACTIVACIONES", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
+
+    // Agrupar por activación única para tabla limpia
+    const actMap = {};
+    DATOS_FIL.forEach(r => {
+      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}|${r.tipo}`;
+      if (!actMap[key]) actMap[key] = {...r, productos:[], personas: r.hombres+r.mujeres+r.ninos};
+      if (r.producto) actMap[key].productos.push(`${r.producto}(${r.cantidad})`);
+    });
+    const actArr = Object.values(actMap).slice(0,12);
+
+    const tabDet = [
+      [
+        {text:"FECHA",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+        {text:"SUPERVISOR",  options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+        {text:"MARCA",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+        {text:"LOCAL",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+        {text:"TIPO",        options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+        {text:"PERSONAS",    options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8,align:"center"}},
+        {text:"PRODUCTOS",   options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
+      ],
+      ...actArr.map((r,i)=>{
+        const bg = i%2===0 ? "111827" : "0d1424";
+        return [
+          {text:r.fecha||"—",     options:{color:GRIS,fill:{color:bg},fontSize:8}},
+          {text:r.supervisor||"—",options:{color:BLANCO,fill:{color:bg},fontSize:8,bold:true}},
+          {text:r.marca||"—",     options:{color:ROJO,fill:{color:bg},fontSize:8,bold:true}},
+          {text:r.local||"—",     options:{color:GRIS,fill:{color:bg},fontSize:8}},
+          {text:r.tipo||"—",      options:{color:GRIS,fill:{color:bg},fontSize:8}},
+          {text:String(r.personas||0),options:{color:BLANCO,fill:{color:bg},fontSize:8,align:"center"}},
+          {text:(r.productos.slice(0,3).join(", "))||"—",options:{color:GRIS,fill:{color:bg},fontSize:7.5}},
+        ];
+      })
+    ];
+
+    s5.addTable(tabDet, { x:0.2, y:0.75, w:9.6,
+      colW:[1.1,1.6,1.3,1.2,1.4,0.85,2.1], fontSize:8, rowH:0.31,
+      border:{pt:0.3,color:"222244"} });
+
+    if (actArr.length === 12) {
+      s5.addText(`Mostrando 12 de ${Object.values(actMap).length} activaciones`, {
+        x:0.3, y:5.1, w:9, h:0.25, fontSize:8, color:GRIS, align:"right"
+      });
+    }
+    s5.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+
+    // ── SLIDE 6: EVIDENCIAS FOTOGRÁFICAS ─────
+    const fotosConLink = DATOS_FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http")).slice(0,6);
+    if (fotosConLink.length > 0) {
+      const s6 = pres.addSlide();
+      s6.background = { color: NEGRO };
+      s6.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+      s6.addText("EVIDENCIAS FOTOGRÁFICAS", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
+
+      // Grid 3×2
+      const cols = 3, rows = 2, fw = 2.9, fh = 2.1, xStart=0.3, yStart=0.8, gap=0.1;
+      fotosConLink.forEach((r,i) => {
+        const col = i%cols, row = Math.floor(i/cols);
+        const fx = xStart + col*(fw+gap), fy = yStart + row*(fh+gap);
+        // Marco
+        s6.addShape(pres.shapes.RECTANGLE, { x:fx, y:fy, w:fw, h:fh, fill:{color:"111827"}, line:{color:ROJO,pt:1} });
+        // Imagen
+        try {
+          s6.addImage({ path:r.evidencia, x:fx, y:fy, w:fw, h:fh-0.3, sizing:{type:"cover",w:fw,h:fh-0.3} });
+        } catch(e) {
+          s6.addText("📷", { x:fx, y:fy, w:fw, h:fh-0.3, fontSize:28, align:"center", valign:"middle" });
+        }
+        // Caption
+        s6.addShape(pres.shapes.RECTANGLE, { x:fx, y:fy+fh-0.3, w:fw, h:0.3, fill:{color:"111827"}, line:{color:"111827"} });
+        s6.addText(`${r.marca} · ${r.local} · ${r.fecha}`, {
+          x:fx, y:fy+fh-0.3, w:fw, h:0.3, fontSize:7, color:GRIS, align:"center", valign:"middle"
+        });
+      });
+
+      s6.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+    }
+
+    // ── SLIDE CIERRE ──────────────────────────
+    const sc = pres.addSlide();
+    sc.background = { color: NEGRO };
+    sc.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+    sc.addShape(pres.shapes.RECTANGLE, { x:0.45, y:0.45, w:1.4, h:0.55, fill:{color:ROJO}, line:{color:ROJO} });
+    sc.addText("+ MARKA", { x:0.45, y:0.45, w:1.4, h:0.55, fontSize:13, bold:true, color:BLANCO, align:"center", valign:"middle", margin:0 });
+    sc.addText("¡Hacemos que\ntu marca sea +!", { x:0.5, y:1.4, w:9, h:1.5, fontSize:36, bold:true, color:BLANCO, align:"center" });
+    sc.addText("CONTACTO", { x:0.5, y:3.2, w:9, h:0.35, fontSize:9, color:GRIS, charSpacing:4, align:"center" });
+    sc.addText("Diana Moreno  ·  dianam@masmarka.com.py", { x:0.5, y:3.6, w:9, h:0.4, fontSize:12, color:BLANCO, align:"center" });
+    sc.addText("www.masmarka.com.py", { x:0.5, y:4.1, w:9, h:0.35, fontSize:11, color:ROJO, align:"center" });
+    sc.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
+
+    // GUARDAR
+    const fecha = new Date().toLocaleDateString("es-PY").replace(/\//g,"-");
+    await pres.writeFile({ fileName: `MARKA_Activaciones_${fecha}.pptx` });
+    toast("✓ PPT descargado exitosamente","ok");
+
+  } catch(e) {
+    console.error(e);
+    toast("Error generando PPT: "+e.message,"err");
+  }
+
+  ocultarOverlay();
+  btn.disabled = false;
+  btn.innerHTML = "⬇ Descargar PPT";
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function mostrarOverlay(txt,sub){
+  document.getElementById("overlayTxt").textContent = txt||"Cargando...";
+  document.getElementById("overlaySub").textContent = sub||"";
+  document.getElementById("overlay").classList.add("on");
+}
+function ocultarOverlay(){ document.getElementById("overlay").classList.remove("on"); }
+let _tt;
+function toast(msg,tipo){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.className="toast "+(tipo||"ok");
+  clearTimeout(_tt);
+  requestAnimationFrame(()=>el.classList.add("on"));
+  _tt=setTimeout(()=>el.classList.remove("on"),3500);
+}
+</script>
+</body>
+</html>
