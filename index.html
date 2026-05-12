@@ -5,921 +5,909 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>+MARKA · Tablero de Activaciones</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --rojo:#C8102E;--oscuro:#1a1a2e;--blanco:#ffffff;
   --gris1:#f4f5f7;--gris2:#e8eaed;--gris3:#9aa0a6;--gris4:#5f6368;
-  --verde:#1e7e34;--amarillo:#f59e0b;
-  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.08);
+  --verde:#1e7e34;--azul:#1a73e8;--amarillo:#f59e0b;
+  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.07);
 }
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f1f3f4;color:#202124;min-height:100vh}
 
 /* ── HEADER ── */
-.header{background:var(--oscuro);padding:0 28px;height:60px;display:flex;
-  align-items:center;gap:16px;position:sticky;top:0;z-index:200;
+.header{background:var(--oscuro);padding:0 24px;height:58px;display:flex;
+  align-items:center;gap:14px;position:sticky;top:0;z-index:200;
   box-shadow:0 2px 12px rgba(0,0,0,.4);}
-.logo{display:flex;align-items:center;gap:8px}
-.logo-badge{background:var(--rojo);color:#fff;font-weight:900;font-size:15px;
-  padding:5px 12px;border-radius:7px;letter-spacing:.5px}
-.logo-sub{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
-.header-title{color:#fff;font-size:1rem;font-weight:700;margin-left:8px}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.btn-ppt{background:var(--rojo);color:#fff;border:none;padding:8px 18px;border-radius:8px;
-  font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;
-  transition:background .15s;white-space:nowrap}
+.logo{display:flex;align-items:center;gap:0}
+.logo-plus{background:var(--rojo);color:#fff;font-weight:900;font-size:13px;
+  padding:5px 9px 5px 11px;border-radius:6px 0 0 6px;letter-spacing:.3px}
+.logo-marka{background:rgba(255,255,255,.08);color:#fff;font-weight:900;font-size:13px;
+  padding:5px 11px 5px 9px;border-radius:0 6px 6px 0;letter-spacing:.3px}
+.header-title{color:rgba(255,255,255,.9);font-size:.95rem;font-weight:600;margin-left:4px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#6fcf8a;
+  box-shadow:0 0 6px #6fcf8a;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sync-txt{color:rgba(255,255,255,.55);font-size:.75rem;white-space:nowrap}
+.btn-refresh{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);
+  padding:7px 12px;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer}
+.btn-refresh:hover{background:rgba(255,255,255,.2)}
+.btn-ppt{background:var(--rojo);color:#fff;border:none;padding:7px 14px;border-radius:7px;
+  font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .btn-ppt:hover{background:#a00d23}
 .btn-ppt:disabled{opacity:.5;cursor:not-allowed}
-.btn-refresh{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);
-  padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .15s}
-.btn-refresh:hover{background:rgba(255,255,255,.2)}
 
 /* ── FILTROS ── */
-.filtros-bar{background:#fff;border-bottom:1px solid var(--gris2);padding:12px 28px;
-  display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
-.filtro-grupo{display:flex;flex-direction:column;gap:4px}
-.filtro-grupo label{font-size:.7rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.07em;color:var(--gris4)}
-.filtro-grupo select,.filtro-grupo input{
-  padding:7px 12px;border:1.5px solid var(--gris2);border-radius:7px;
-  font-size:.85rem;background:var(--gris1);color:#202124;min-width:160px;
+.filtros-bar{background:#fff;border-bottom:2px solid var(--gris2);padding:10px 24px;
+  display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gris4)}
+.fg select,.fg input{padding:7px 10px;border:1.5px solid var(--gris2);border-radius:7px;
+  font-size:.82rem;background:var(--gris1);color:#202124;min-width:140px;
   appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer}
-.filtro-grupo select:focus,.filtro-grupo input:focus{
-  outline:none;border-color:var(--oscuro)}
-.btn-limpiar{margin-top:18px;padding:7px 14px;background:var(--gris2);border:none;
-  border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--gris4)}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--oscuro)}
+.btn-limpiar{padding:7px 12px;background:var(--gris2);border:none;
+  border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--gris4);margin-bottom:1px}
 .btn-limpiar:hover{background:#d0d3d9}
 
 /* ── MAIN ── */
-.main{max-width:1400px;margin:0 auto;padding:22px 24px}
+.main{max-width:1400px;margin:0 auto;padding:20px 22px}
 
 /* ── KPIs ── */
-.kpis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
-.kpi-card{background:#fff;border-radius:var(--radius);padding:18px 20px;
-  box-shadow:var(--shadow);border-left:4px solid var(--rojo);position:relative;overflow:hidden}
-.kpi-card::after{content:'';position:absolute;right:-10px;top:-10px;
-  width:60px;height:60px;border-radius:50%;background:rgba(200,16,46,.06)}
-.kpi-label{font-size:.72rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--gris4);margin-bottom:8px}
-.kpi-valor{font-size:2rem;font-weight:900;color:var(--oscuro);line-height:1}
-.kpi-sub{font-size:.72rem;color:var(--gris3);margin-top:5px}
+.kpis-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:1100px){.kpis-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpis-grid{grid-template-columns:1fr 1fr}}
+.kpi{background:#fff;border-radius:var(--radius);padding:16px 18px 14px;
+  box-shadow:var(--shadow);border-top:3px solid var(--rojo);transition:transform .18s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi.verde{border-top-color:var(--verde)}
+.kpi.azul{border-top-color:var(--azul)}
+.kpi.amarillo{border-top-color:var(--amarillo)}
+.kpi.oscuro{border-top-color:var(--oscuro)}
+.kpi-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--gris4);margin-bottom:7px}
+.kpi-val{font-size:2.2rem;font-weight:900;color:var(--oscuro);line-height:1;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:.7rem;color:var(--gris3);margin-top:5px}
 
-/* ── GRIDS DE GRÁFICOS ── */
+/* ── CHARTS ROW ── */
 .charts-row{display:grid;gap:14px;margin-bottom:14px}
-.charts-row.c2{grid-template-columns:1fr 1fr}
-.charts-row.c3{grid-template-columns:1fr 1fr 1fr}
-.charts-row.c1{grid-template-columns:1fr}
-@media(max-width:900px){.charts-row.c2,.charts-row.c3{grid-template-columns:1fr}}
+.cr2{grid-template-columns:1fr 1fr}
+.cr3{grid-template-columns:1.2fr 1fr 1fr}
+@media(max-width:900px){.cr2,.cr3{grid-template-columns:1fr}}
 
-.chart-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.chart-card h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--gris4);margin-bottom:16px;
-  display:flex;align-items:center;gap:8px}
-.chart-card h3 span{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--rojo)}
-.chart-wrap{position:relative;height:220px}
-canvas{max-height:100%}
+.panel{background:#fff;border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow)}
+.panel-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--gris4);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.panel-title .dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.chart-wrap{height:210px;position:relative}
 
 /* ── TABLA ── */
-.tabla-card{background:#fff;border-radius:var(--radius);padding:20px;
+.tabla-panel{background:#fff;border-radius:var(--radius);padding:18px;
   box-shadow:var(--shadow);margin-bottom:14px}
-.tabla-card h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--gris4);margin-bottom:14px;
-  display:flex;align-items:center;justify-content:space-between}
-.tabla-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.tabla-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.tabla-header h3{font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gris4)}
+.cnt-badge{font-size:.75rem;color:var(--gris3);background:var(--gris1);
+  padding:3px 10px;border-radius:20px;border:1px solid var(--gris2)}
+.tabla-wrap{overflow-x:auto;max-height:400px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead{position:sticky;top:0;z-index:2}
 thead tr{background:var(--oscuro)}
-thead th{color:#fff;padding:10px 12px;text-align:left;font-size:.72rem;
+thead th{color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;
   font-weight:700;letter-spacing:.06em;white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--gris2);transition:background .12s}
+tbody tr{border-bottom:1px solid var(--gris2);transition:background .1s}
 tbody tr:hover{background:var(--gris1)}
-tbody td{padding:9px 12px;color:#202124;vertical-align:middle}
-.badge{display:inline-block;padding:2px 9px;border-radius:20px;
-  font-size:.7rem;font-weight:700;white-space:nowrap}
-.badge-verde{background:#e6f4ea;color:#1e7e34}
-.badge-rojo{background:#fce8ec;color:var(--rojo)}
-.badge-azul{background:#e8f0fe;color:#1a73e8}
-.evidencia-link{color:var(--rojo);text-decoration:none;font-weight:600;font-size:.8rem}
-.evidencia-link:hover{text-decoration:underline}
+tbody td{padding:8px 12px;vertical-align:middle}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;
+  font-size:.68rem;font-weight:700;white-space:nowrap}
+.b-rojo{background:#fce8ec;color:var(--rojo)}
+.b-azul{background:#e8f0fe;color:var(--azul)}
+.b-verde{background:#e6f4ea;color:var(--verde)}
+.b-gris{background:var(--gris1);color:var(--gris4)}
+.ev-link{color:var(--rojo);text-decoration:none;font-weight:700;font-size:.78rem}
+.ev-link:hover{text-decoration:underline}
+.personas-cell{display:flex;gap:8px;align-items:center}
+.p-ico{font-size:.75rem;color:var(--gris4)}
 
-/* ── FOTOS GRID ── */
-.fotos-section{background:#fff;border-radius:var(--radius);padding:20px;
+/* ── FOTOS ── */
+.fotos-panel{background:#fff;border-radius:var(--radius);padding:18px;
   box-shadow:var(--shadow);margin-bottom:14px}
-.fotos-section h3{font-size:.78rem;font-weight:700;text-transform:uppercase;
+.fotos-panel h3{font-size:.72rem;font-weight:700;text-transform:uppercase;
   letter-spacing:.08em;color:var(--gris4);margin-bottom:14px}
-.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-.foto-item{border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:var(--gris2);
-  position:relative;cursor:pointer}
-.foto-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
-.foto-item:hover img{transform:scale(1.04)}
-.foto-item .foto-caption{position:absolute;bottom:0;left:0;right:0;
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.foto-card{border-radius:9px;overflow:hidden;aspect-ratio:4/3;background:var(--gris2);
+  position:relative;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.foto-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.foto-card:hover img{transform:scale(1.04)}
+.foto-caption{position:absolute;bottom:0;left:0;right:0;
   background:linear-gradient(transparent,rgba(0,0,0,.75));
-  color:#fff;font-size:.68rem;padding:18px 8px 6px;font-weight:600}
+  color:#fff;font-size:.65rem;padding:16px 7px 5px;font-weight:600;line-height:1.3}
 .foto-placeholder{width:100%;height:100%;display:flex;align-items:center;
   justify-content:center;font-size:2rem;color:var(--gris3)}
 
-/* ── EMPTY ── */
-.empty{text-align:center;padding:60px 20px;color:var(--gris3)}
-.empty-ico{font-size:3rem;margin-bottom:12px}
-.empty p{font-size:.95rem;font-weight:500}
+/* ── RESUMEN POR SUPERVISOR ── */
+.sup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:14px}
+.sup-card{background:#fff;border-radius:var(--radius);padding:16px 18px;
+  box-shadow:var(--shadow);border-left:4px solid var(--rojo)}
+.sup-name{font-size:.9rem;font-weight:700;color:var(--oscuro);margin-bottom:10px}
+.sup-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sup-stat{text-align:center}
+.sup-stat .n{font-size:1.4rem;font-weight:900;color:var(--oscuro)}
+.sup-stat .l{font-size:.65rem;color:var(--gris3);text-transform:uppercase;letter-spacing:.05em}
 
-/* ── LOADING ── */
-.overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);
+/* ── EMPTY ── */
+.empty{text-align:center;padding:50px 20px;color:var(--gris3)}
+.empty-ico{font-size:2.5rem;margin-bottom:10px}
+.empty p{font-size:.9rem}
+
+/* ── OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);
   display:none;align-items:center;justify-content:center;flex-direction:column;
-  gap:14px;z-index:999}
+  gap:12px;z-index:999}
 .overlay.on{display:flex}
-.spin{width:44px;height:44px;border:4px solid var(--gris2);
+.spin{width:42px;height:42px;border:4px solid var(--gris2);
   border-top-color:var(--rojo);border-radius:50%;animation:giro .8s linear infinite}
 @keyframes giro{to{transform:rotate(360deg)}}
-.overlay-txt{font-weight:700;color:var(--oscuro)}
-.overlay-sub{font-size:.82rem;color:var(--gris3)}
+.overlay-txt{font-weight:700;color:var(--oscuro);font-size:.9rem}
+.overlay-sub{font-size:.78rem;color:var(--gris3)}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:20px;right:20px;padding:12px 20px;border-radius:10px;
-  color:#fff;font-weight:600;font-size:.88rem;
-  box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;
-  transform:translateY(10px);transition:all .3s;z-index:9999;pointer-events:none}
+.toast{position:fixed;bottom:18px;right:18px;padding:11px 18px;border-radius:9px;
+  color:#fff;font-weight:600;font-size:.85rem;box-shadow:0 4px 18px rgba(0,0,0,.2);
+  opacity:0;transform:translateY(8px);transition:all .28s;z-index:9999;pointer-events:none}
 .toast.on{opacity:1;transform:translateY(0)}
 .toast.ok{background:var(--verde)}.toast.err{background:var(--rojo)}
 
 /* ── MODAL FOTO ── */
 .modal-foto{position:fixed;inset:0;background:rgba(0,0,0,.88);
-  display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+  display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
 .modal-foto.on{display:flex}
-.modal-foto img{max-width:90vw;max-height:90vh;border-radius:10px;
-  box-shadow:0 8px 40px rgba(0,0,0,.6)}
-.modal-foto-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,.15);
-  color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:22px;
+.modal-foto img{max-width:92vw;max-height:92vh;border-radius:10px}
+.mf-close{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.15);
+  color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:20px;
   cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── TABS ── */
+.tabs{background:#fff;border-bottom:2px solid var(--gris2);display:flex;
+  overflow-x:auto;padding:0 22px;position:sticky;top:58px;z-index:100}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:13px 18px;font-size:.78rem;font-weight:700;color:var(--gris3);
+  border:none;background:none;border-bottom:3px solid transparent;cursor:pointer;
+  white-space:nowrap;-webkit-tap-highlight-color:transparent;letter-spacing:.03em}
+.tab.on{color:var(--rojo);border-bottom-color:var(--rojo)}
+.tab:hover:not(.on){color:var(--oscuro)}
+
+.seccion{display:none}.seccion.on{display:block}
 </style>
 </head>
 <body>
 
+<!-- OVERLAY -->
 <div class="overlay" id="overlay">
   <div class="spin"></div>
   <div class="overlay-txt" id="overlayTxt">Cargando datos...</div>
-  <div class="overlay-sub" id="overlaySub"></div>
+  <div class="overlay-sub" id="overlaySub">Conectando con Google Sheets</div>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal-foto" id="modalFoto" onclick="cerrarFoto(event)">
-  <button class="modal-foto-close" onclick="document.getElementById('modalFoto').classList.remove('on')">✕</button>
+  <button class="mf-close" onclick="document.getElementById('modalFoto').classList.remove('on')">✕</button>
   <img id="modalFotoImg" src="" alt="">
 </div>
 
+<!-- HEADER -->
 <header class="header">
   <div class="logo">
-    <span class="logo-badge">+MARKA</span>
-    <span class="logo-sub">IMPULSOS</span>
+    <span class="logo-plus">+</span>
+    <span class="logo-marka">MARKA</span>
   </div>
   <span class="header-title">Tablero de Activaciones</span>
   <div class="header-right">
-    <button class="btn-refresh" onclick="cargarDatos()">↻ Actualizar</button>
-    <button class="btn-ppt" id="btnPPT" onclick="generarPPT()">
-      ⬇ Descargar PPT
-    </button>
+    <div class="sync-dot" id="syncDot"></div>
+    <span class="sync-txt" id="syncTxt">Actualizando...</span>
+    <button class="btn-refresh" onclick="cargarDatos(true)">↻ Actualizar</button>
+    <button class="btn-ppt" id="btnPPT" onclick="generarPPT()">⬇ Descargar PPT</button>
   </div>
 </header>
 
+<!-- FILTROS -->
 <div class="filtros-bar">
-  <div class="filtro-grupo">
-    <label>Supervisor</label>
-    <select id="fSupervisor" onchange="aplicarFiltros()">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filtro-grupo">
-    <label>Marca</label>
-    <select id="fMarca" onchange="aplicarFiltros()">
-      <option value="">Todas</option>
-    </select>
-  </div>
-  <div class="filtro-grupo">
-    <label>Local</label>
-    <select id="fLocal" onchange="aplicarFiltros()">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filtro-grupo">
-    <label>Tipo Activación</label>
-    <select id="fTipo" onchange="aplicarFiltros()">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filtro-grupo">
-    <label>Fecha desde</label>
-    <input type="date" id="fFechaDesde" onchange="aplicarFiltros()">
-  </div>
-  <div class="filtro-grupo">
-    <label>Fecha hasta</label>
-    <input type="date" id="fFechaHasta" onchange="aplicarFiltros()">
-  </div>
+  <div class="fg"><label>Supervisor</label>
+    <select id="fSup" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Marca</label>
+    <select id="fMar" onchange="aplicarFiltros()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Local</label>
+    <select id="fLoc" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Tipo de Activación</label>
+    <select id="fTip" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Desde</label>
+    <input type="date" id="fDes" onchange="aplicarFiltros()"></div>
+  <div class="fg"><label>Hasta</label>
+    <input type="date" id="fHas" onchange="aplicarFiltros()"></div>
   <button class="btn-limpiar" onclick="limpiarFiltros()">✕ Limpiar</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" id="tab0" onclick="cambiarTab(0)">📊 Resumen</button>
+  <button class="tab" id="tab1" onclick="cambiarTab(1)">👤 Supervisores</button>
+  <button class="tab" id="tab2" onclick="cambiarTab(2)">📦 Productos</button>
+  <button class="tab" id="tab3" onclick="cambiarTab(3)">📋 Detalle</button>
+  <button class="tab" id="tab4" onclick="cambiarTab(4)">📷 Evidencias</button>
 </div>
 
 <div class="main">
 
-  <!-- KPIs -->
+<!-- ══ TAB 0: RESUMEN ══ -->
+<div class="seccion on" id="sec0">
   <div class="kpis-grid" id="kpisGrid"></div>
-
-  <!-- Gráficos fila 1 -->
-  <div class="charts-row c2" id="chartsRow1">
-    <div class="chart-card">
-      <h3><span></span>Activaciones por Marca</h3>
-      <div class="chart-wrap"><canvas id="chartMarca"></canvas></div>
+  <div class="charts-row cr3">
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Activaciones por Marca</div>
+      <div class="chart-wrap"><canvas id="cMarca"></canvas></div>
     </div>
-    <div class="chart-card">
-      <h3><span></span>Tipo de Activación</h3>
-      <div class="chart-wrap"><canvas id="chartTipo"></canvas></div>
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--azul)"></div>Tipo de Activación</div>
+      <div class="chart-wrap"><canvas id="cTipo"></canvas></div>
     </div>
-  </div>
-
-  <!-- Gráficos fila 2 -->
-  <div class="charts-row c2" id="chartsRow2">
-    <div class="chart-card">
-      <h3><span></span>Top Productos Vendidos</h3>
-      <div class="chart-wrap"><canvas id="chartProductos"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3><span></span>Personas Abordadas por Supervisor</h3>
-      <div class="chart-wrap"><canvas id="chartPersonas"></canvas></div>
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--verde)"></div>Personas por Marca</div>
+      <div class="chart-wrap"><canvas id="cPersonasMarca"></canvas></div>
     </div>
   </div>
+  <div class="charts-row cr2">
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--amarillo)"></div>Activaciones por Local (Top 10)</div>
+      <div class="chart-wrap"><canvas id="cLocal"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--oscuro)"></div>Top Productos Vendidos</div>
+      <div class="chart-wrap"><canvas id="cProd"></canvas></div>
+    </div>
+  </div>
+</div>
 
-  <!-- Tabla detalle -->
-  <div class="tabla-card">
-    <h3>
-      Detalle de Activaciones
-      <span id="countLabel" style="font-weight:400;font-size:.78rem;color:var(--gris3)"></span>
-    </h3>
+<!-- ══ TAB 1: SUPERVISORES ══ -->
+<div class="seccion" id="sec1">
+  <div class="sup-grid" id="supGrid"></div>
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Personas Abordadas por Supervisor</div>
+    <div class="chart-wrap"><canvas id="cSupPersonas"></canvas></div>
+  </div>
+</div>
+
+<!-- ══ TAB 2: PRODUCTOS ══ -->
+<div class="seccion" id="sec2">
+  <div class="charts-row cr2">
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--rojo)"></div>Unidades por Producto (Top 15)</div>
+      <div class="chart-wrap" style="height:320px"><canvas id="cProdDetalle"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:var(--azul)"></div>Unidades por Marca</div>
+      <div class="chart-wrap"><canvas id="cMarcaUnd"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: DETALLE ══ -->
+<div class="seccion" id="sec3">
+  <div class="tabla-panel">
+    <div class="tabla-header">
+      <h3>Registros de Activaciones</h3>
+      <span class="cnt-badge" id="cntBadge">—</span>
+    </div>
     <div class="tabla-wrap">
       <table>
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Supervisor</th>
-            <th>Marca</th>
-            <th>Local</th>
-            <th>Tipo</th>
-            <th>Temática</th>
-            <th>H</th><th>M</th><th>N</th>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Evidencia</th>
+            <th>Fecha</th><th>Supervisor</th><th>Marca</th><th>Local</th>
+            <th>Tipo</th><th>Temática</th>
+            <th>👨</th><th>👩</th><th>👶</th>
+            <th>Producto</th><th>Cant.</th><th>Evidencia</th>
           </tr>
         </thead>
         <tbody id="tablaBody"></tbody>
       </table>
     </div>
   </div>
+</div>
 
-  <!-- Evidencias fotográficas -->
-  <div class="fotos-section">
+<!-- ══ TAB 4: EVIDENCIAS ══ -->
+<div class="seccion" id="sec4">
+  <div class="fotos-panel">
     <h3>Evidencias Fotográficas</h3>
     <div class="fotos-grid" id="fotosGrid"></div>
   </div>
-
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</div><!-- /main -->
+
 <script>
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
-const CSV_URL_DIRECTA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
+// ═══════════════════════════════════════════════
+// CONFIG — URL CSV publicado de Hoja 1
+// ═══════════════════════════════════════════════
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?gid=0&single=true&output=csv";
 
-// URL pública CSV de la hoja
-const CSV_URL = CSV_URL_DIRECTA;
+let RAW = [], FIL = [];
+let CHARTS = {};
+let TAB_ACTIVO = 0;
 
-let DATOS_RAW = [];   // todos los datos del sheet
-let DATOS_FIL = [];   // datos filtrados
-let CHARTS    = {};   // instancias de Chart.js
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 // INIT
-// ─────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", cargarDatos);
+// ═══════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => cargarDatos(false));
 
-async function cargarDatos() {
-  mostrarOverlay("Cargando datos...", "Leyendo Google Sheets");
+async function cargarDatos(manual=false) {
+  setSyncStatus("loading");
+  mostrarOverlay("Cargando datos...", "Leyendo Hoja 1 de Google Sheets");
   try {
-    const resp = await fetch(CSV_URL + "&t=" + Date.now());
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
-    const txt  = await resp.text();
-    DATOS_RAW  = parsearCSV(txt);
+    const r = await fetch(CSV_URL + "&t=" + Date.now());
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const txt = await r.text();
+    RAW = parsearCSV(txt);
     poblarFiltros();
     aplicarFiltros();
-    toast("✓ Datos actualizados", "ok");
+    setSyncStatus("ok");
+    const h = new Date().toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("syncTxt").textContent = "Actualizado " + h;
+    if (manual) toast("✓ Datos actualizados — " + RAW.length + " registros", "ok");
   } catch(e) {
-    toast("Error al cargar datos: " + e.message, "err");
+    setSyncStatus("err");
+    document.getElementById("syncTxt").textContent = "Error de conexión";
+    toast("Error: " + e.message, "err");
     console.error(e);
   }
   ocultarOverlay();
 }
 
-// ─────────────────────────────────────────────
-// PARSEAR CSV
-// ─────────────────────────────────────────────
-function parsearCSV(txt) {
-  const lineas = txt.trim().split(/\r?\n/);
-  if (lineas.length < 2) return [];
-  // saltar encabezado (fila 0)
-  return lineas.slice(1).map(l => {
-    const cols = parsearLineaCSV(l);
-    return {
-      fecha:     limpiar(cols[0]),
-      supervisor:limpiar(cols[1]),
-      marca:     limpiar(cols[2]),
-      local:     limpiar(cols[3]),
-      tipo:      limpiar(cols[4]),
-      tematica:  limpiar(cols[5]),
-      hombres:   numOr0(cols[6]),
-      mujeres:   numOr0(cols[7]),
-      ninos:     numOr0(cols[8]),
-      producto:  limpiar(cols[9]),
-      cantidad:  numOr0(cols[10]),
-      evidencia: limpiar(cols[11]),
-    };
-  }).filter(r => r.supervisor || r.marca); // excluir filas vacías
+function setSyncStatus(s) {
+  const d = document.getElementById("syncDot");
+  d.style.background = s==="ok"?"#6fcf8a":s==="loading"?"#f59e0b":"#f06060";
+  d.style.boxShadow  = s==="ok"?"0 0 6px #6fcf8a":s==="loading"?"0 0 6px #f59e0b":"0 0 6px #f06060";
 }
 
-function parsearLineaCSV(line) {
-  const res = []; let cur = ""; let inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') { inQ = !inQ; continue; }
-    if (c === ',' && !inQ) { res.push(cur); cur = ""; continue; }
-    cur += c;
+// Auto-refresh 5 min
+setInterval(() => cargarDatos(false), 5 * 60 * 1000);
+
+// ═══════════════════════════════════════════════
+// PARSEAR CSV
+// ═══════════════════════════════════════════════
+function parsearCSV(txt) {
+  const lines = txt.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  // fila 0 = encabezados, empezar desde fila 1
+  return lines.slice(1).map(l => {
+    const c = csvLine(l);
+    return {
+      fecha:      lmp(c[0]),
+      supervisor: lmp(c[1]),
+      marca:      lmp(c[2]),
+      local:      lmp(c[3]),
+      tipo:       lmp(c[4]),
+      tematica:   lmp(c[5]),
+      hombres:    n0(c[6]),
+      mujeres:    n0(c[7]),
+      ninos:      n0(c[8]),
+      producto:   lmp(c[9]),
+      cantidad:   n0(c[10]),
+      evidencia:  lmp(c[11]),
+    };
+  }).filter(r => r.fecha || r.supervisor || r.marca);
+}
+
+function csvLine(line) {
+  const res=[]; let cur=""; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;continue;}
+    if(c===','&&!inQ){res.push(cur);cur="";continue;}
+    cur+=c;
   }
   res.push(cur);
   return res;
 }
+function lmp(v){ return (v||"").replace(/^"|"$/g,"").trim(); }
+function n0(v) { const n=parseFloat(lmp(v)); return isNaN(n)?0:n; }
 
-function limpiar(v) { return (v||"").replace(/^"|"$/g,"").trim(); }
-function numOr0(v)  { const n = parseFloat(limpiar(v)); return isNaN(n) ? 0 : n; }
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 // FILTROS
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 function poblarFiltros() {
-  const uniq = (arr, k) => [...new Set(arr.map(r=>r[k]).filter(Boolean))].sort();
-  poblarSelect("fSupervisor", uniq(DATOS_RAW,"supervisor"));
-  poblarSelect("fMarca",      uniq(DATOS_RAW,"marca"));
-  poblarSelect("fLocal",      uniq(DATOS_RAW,"local"));
-  poblarSelect("fTipo",       uniq(DATOS_RAW,"tipo"));
+  const uniq=(k)=>[...new Set(RAW.map(r=>r[k]).filter(Boolean))].sort();
+  llenarSelect("fSup", uniq("supervisor"));
+  llenarSelect("fMar", uniq("marca"));
+  llenarSelect("fLoc", uniq("local"));
+  llenarSelect("fTip", uniq("tipo"));
 }
 
-function poblarSelect(id, vals) {
-  const sel = document.getElementById(id);
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">Todos</option>';
-  vals.forEach(v => {
-    const o = document.createElement("option");
-    o.value = o.textContent = v;
-    if (v === cur) o.selected = true;
-    sel.appendChild(o);
-  });
+function llenarSelect(id, vals) {
+  const s=document.getElementById(id), cur=s.value;
+  s.innerHTML='<option value="">Todos</option>';
+  vals.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;if(v===cur)o.selected=true;s.appendChild(o);});
 }
 
 function aplicarFiltros() {
-  const fSup  = document.getElementById("fSupervisor").value;
-  const fMar  = document.getElementById("fMarca").value;
-  const fLoc  = document.getElementById("fLocal").value;
-  const fTip  = document.getElementById("fTipo").value;
-  const fDes  = document.getElementById("fFechaDesde").value;
-  const fHas  = document.getElementById("fFechaHasta").value;
+  const fSup=document.getElementById("fSup").value;
+  const fMar=document.getElementById("fMar").value;
+  const fLoc=document.getElementById("fLoc").value;
+  const fTip=document.getElementById("fTip").value;
+  const fDes=document.getElementById("fDes").value;
+  const fHas=document.getElementById("fHas").value;
 
-  DATOS_FIL = DATOS_RAW.filter(r => {
-    if (fSup && r.supervisor !== fSup) return false;
-    if (fMar && r.marca      !== fMar) return false;
-    if (fLoc && r.local      !== fLoc) return false;
-    if (fTip && r.tipo       !== fTip) return false;
-    if (fDes || fHas) {
-      const fd = parseFecha(r.fecha);
-      if (fDes && fd && fd < new Date(fDes)) return false;
-      if (fHas && fd && fd > new Date(fHas+"T23:59:59")) return false;
+  FIL = RAW.filter(r => {
+    if(fSup && r.supervisor!==fSup) return false;
+    if(fMar && r.marca!==fMar)      return false;
+    if(fLoc && r.local!==fLoc)      return false;
+    if(fTip && r.tipo!==fTip)       return false;
+    if(fDes||fHas){
+      const fd=parseFecha(r.fecha);
+      if(!fd) return false;
+      if(fDes && fd<new Date(fDes)) return false;
+      if(fHas && fd>new Date(fHas+"T23:59:59")) return false;
     }
     return true;
   });
-
   renderTodo();
 }
 
-function parseFecha(str) {
-  // formato dd/MM/yyyy
-  const p = str.split("/");
-  if (p.length===3) return new Date(p[2], p[1]-1, p[0]);
-  return null;
+function parseFecha(s){
+  const p=s.split("/"); if(p.length===3) return new Date(p[2],p[1]-1,p[0]); return null;
 }
 
-function limpiarFiltros() {
-  ["fSupervisor","fMarca","fLocal","fTipo"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("fFechaDesde").value="";
-  document.getElementById("fFechaHasta").value="";
+function limpiarFiltros(){
+  ["fSup","fMar","fLoc","fTip"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("fDes").value="";
+  document.getElementById("fHas").value="";
   aplicarFiltros();
 }
 
-// ─────────────────────────────────────────────
-// RENDERIZADO GENERAL
-// ─────────────────────────────────────────────
-function renderTodo() {
-  renderKPIs();
-  renderCharts();
-  renderTabla();
-  renderFotos();
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function cambiarTab(i){
+  document.querySelectorAll(".tab").forEach((t,idx)=>t.classList.toggle("on",idx===i));
+  document.querySelectorAll(".seccion").forEach((s,idx)=>s.classList.toggle("on",idx===i));
+  TAB_ACTIVO=i;
+  setTimeout(renderTodo,30);
 }
 
-// ─────────────────────────────────────────────
-// KPIs
-// ─────────────────────────────────────────────
-function renderKPIs() {
-  // activaciones únicas = combinación fecha+supervisor+marca+local
-  const activacionesSet = new Set(DATOS_FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
-  const totalActivaciones = activacionesSet.size;
+// ═══════════════════════════════════════════════
+// RENDER GENERAL
+// ═══════════════════════════════════════════════
+function renderTodo(){
+  renderKPIs();
+  if(TAB_ACTIVO===0) renderResumen();
+  if(TAB_ACTIVO===1) renderSupervisores();
+  if(TAB_ACTIVO===2) renderProductos();
+  if(TAB_ACTIVO===3) renderTabla();
+  if(TAB_ACTIVO===4) renderFotos();
+}
 
-  // personas: solo filas con valor > 0 en hombres/mujeres/ninos (evitar duplicados)
-  const personasSet = new Set();
-  let totalPersonas = 0;
-  DATOS_FIL.forEach(r => {
-    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if ((r.hombres > 0 || r.mujeres > 0 || r.ninos > 0) && !personasSet.has(key)) {
-      personasSet.add(key);
-      totalPersonas += r.hombres + r.mujeres + r.ninos;
+// ═══════════════════════════════════════════════
+// KPIs — siempre visibles
+// ═══════════════════════════════════════════════
+function renderKPIs(){
+  // Activaciones únicas
+  const actSet=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+  const nAct=actSet.size;
+
+  // Personas (sin duplicar por activación)
+  let nPers=0; const persSet=new Set();
+  FIL.forEach(r=>{
+    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persSet.has(k)){
+      persSet.add(k); nPers+=r.hombres+r.mujeres+r.ninos;
     }
   });
 
-  // productos vendidos
-  const totalUnidades = DATOS_FIL.reduce((s,r)=>s+r.cantidad,0);
+  const nUnd   = FIL.reduce((s,r)=>s+r.cantidad,0);
+  const nMarcas= new Set(FIL.map(r=>r.marca).filter(Boolean)).size;
+  const nLocal  = new Set(FIL.map(r=>r.local).filter(Boolean)).size;
 
-  // marcas únicas
-  const marcasUnicas = new Set(DATOS_FIL.map(r=>r.marca).filter(Boolean)).size;
-
-  // locales únicos
-  const localesUnicos = new Set(DATOS_FIL.map(r=>r.local).filter(Boolean)).size;
-
-  const kpis = [
-    { label:"Activaciones", valor: totalActivaciones, sub:"eventos registrados", color:"C8102E" },
-    { label:"Personas Abordadas", valor: totalPersonas, sub:"total abordados", color:"1a1a2e" },
-    { label:"Unidades Vendidas", valor: totalUnidades, sub:"productos concretados", color:"1e7e34" },
-    { label:"Marcas Trabajadas", valor: marcasUnicas, sub:"marcas activas", color:"1a73e8" },
-    { label:"Locales Visitados", valor: localesUnicos, sub:"puntos de venta", color:"f59e0b" },
-  ];
-
-  document.getElementById("kpisGrid").innerHTML = kpis.map(k=>`
-    <div class="kpi-card" style="border-left-color:#${k.color}">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-valor" style="color:#${k.color}">${k.valor.toLocaleString("es-PY")}</div>
+  document.getElementById("kpisGrid").innerHTML=[
+    {lbl:"Activaciones",  val:nAct,   sub:"eventos registrados",    cls:""},
+    {lbl:"Personas",       val:nPers,  sub:"abordadas en total",      cls:"oscuro"},
+    {lbl:"Unidades",       val:n(nUnd),sub:"productos vendidos",      cls:"verde"},
+    {lbl:"Marcas",         val:nMarcas,sub:"marcas trabajadas",       cls:"azul"},
+    {lbl:"Locales",        val:nLocal, sub:"puntos de venta",         cls:"amarillo"},
+  ].map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-lbl">${k.lbl}</div>
+      <div class="kpi-val">${k.val}</div>
       <div class="kpi-sub">${k.sub}</div>
     </div>`).join("");
 }
 
-// ─────────────────────────────────────────────
-// GRÁFICOS
-// ─────────────────────────────────────────────
-const COLORES = ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b","7c3aed","0891b2","db2777","059669","d97706"];
-const C = n => "#" + COLORES[n % COLORES.length];
+// ═══════════════════════════════════════════════
+// TAB 0: RESUMEN
+// ═══════════════════════════════════════════════
+function renderResumen(){
+  // Activaciones por marca
+  const byMarca=contarActs("marca");
+  grafico("cMarca","doughnut",Object.keys(byMarca),Object.values(byMarca),"Activaciones",
+    ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b","7c3aed"].map(c=>"#"+c));
 
-function renderCharts() {
-  // 1. Por marca
-  const porMarca = contarPor(DATOS_FIL, "marca");
-  dibujar("chartMarca", "bar", Object.keys(porMarca), Object.values(porMarca),
-    "Activaciones", COLORES.map(c=>"#"+c));
+  // Por tipo
+  const byTipo=contarActs("tipo");
+  grafico("cTipo","doughnut",Object.keys(byTipo),Object.values(byTipo),"Activaciones",
+    ["1a73e8","C8102E","1e7e34","f59e0b","7c3aed","0891b2"].map(c=>"#"+c));
 
-  // 2. Por tipo
-  const porTipo = contarPor(DATOS_FIL, "tipo");
-  dibujar("chartTipo", "doughnut", Object.keys(porTipo), Object.values(porTipo),
-    "Activaciones", COLORES.map(c=>"#"+c));
-
-  // 3. Top productos
-  const porProd = {};
-  DATOS_FIL.forEach(r => {
-    if (!r.producto) return;
-    porProd[r.producto] = (porProd[r.producto]||0) + r.cantidad;
-  });
-  const topProds = Object.entries(porProd).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  dibujar("chartProductos","bar",topProds.map(p=>p[0]),topProds.map(p=>p[1]),
-    "Unidades","#C8102E");
-
-  // 4. Personas por supervisor
-  const porSup = {};
-  const supVisto = new Set();
-  DATOS_FIL.forEach(r => {
-    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if ((r.hombres > 0 || r.mujeres > 0 || r.ninos > 0) && !supVisto.has(key)) {
-      supVisto.add(key);
-      const s = r.supervisor || "Sin nombre";
-      porSup[s] = (porSup[s]||0) + r.hombres + r.mujeres + r.ninos;
+  // Personas por marca
+  const pm={};const pmV=new Set();
+  FIL.forEach(r=>{
+    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pmV.has(k)){
+      pmV.add(k);pm[r.marca]=(pm[r.marca]||0)+r.hombres+r.mujeres+r.ninos;
     }
   });
-  dibujar("chartPersonas","bar",Object.keys(porSup),Object.values(porSup),
-    "Personas","#1a1a2e");
+  grafico("cPersonasMarca","bar",Object.keys(pm),Object.values(pm),"Personas","#1a1a2e");
+
+  // Por local top 10
+  const byLocal=contarActs("local");
+  const topLocal=Object.entries(byLocal).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  grafico("cLocal","bar",topLocal.map(e=>e[0]),topLocal.map(e=>e[1]),"Activaciones","#f59e0bcc");
+
+  // Top productos
+  const pp={};
+  FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
+  const topP=Object.entries(pp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  grafico("cProd","bar",topP.map(e=>e[0]),topP.map(e=>e[1]),"Unidades","#C8102Ecc");
 }
 
-function contarPor(datos, campo) {
-  // cuenta activaciones únicas por campo
-  const set = {};
-  const visto = new Set();
-  datos.forEach(r => {
-    const key = `${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-    if (r[campo] && !visto.has(campo+key)) {
-      visto.add(campo+key);
-      set[r[campo]] = (set[r[campo]]||0)+1;
+// ═══════════════════════════════════════════════
+// TAB 1: SUPERVISORES
+// ═══════════════════════════════════════════════
+function renderSupervisores(){
+  const bySup={};const supV=new Set();const persV=new Set();
+  FIL.forEach(r=>{
+    const s=r.supervisor||"(sin nombre)";
+    if(!bySup[s])bySup[s]={acts:0,pers:0,und:0,marcas:new Set(),locales:new Set()};
+    const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;
+    if(!supV.has(k)){supV.add(k);bySup[s].acts++;}
+    const pk=k+"|p";
+    if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persV.has(pk)){
+      persV.add(pk);bySup[s].pers+=r.hombres+r.mujeres+r.ninos;
     }
+    bySup[s].und+=r.cantidad;
+    if(r.marca) bySup[s].marcas.add(r.marca);
+    if(r.local) bySup[s].locales.add(r.local);
   });
-  return set;
+
+  document.getElementById("supGrid").innerHTML=Object.entries(bySup).map(([nombre,d])=>`
+    <div class="sup-card">
+      <div class="sup-name">👤 ${nombre}</div>
+      <div class="sup-stats">
+        <div class="sup-stat"><div class="n">${d.acts}</div><div class="l">Activaciones</div></div>
+        <div class="sup-stat"><div class="n">${n(d.pers)}</div><div class="l">Personas</div></div>
+        <div class="sup-stat"><div class="n">${n(d.und)}</div><div class="l">Unidades</div></div>
+      </div>
+      <div style="margin-top:10px;font-size:.72rem;color:var(--gris3)">
+        ${d.marcas.size} marca${d.marcas.size!==1?"s":""} · ${d.locales.size} local${d.locales.size!==1?"es":""}
+      </div>
+    </div>`).join("");
+
+  // Gráfico personas por supervisor
+  const labels=Object.keys(bySup);
+  const valores=Object.values(bySup).map(d=>d.pers);
+  grafico("cSupPersonas","bar",labels,valores,"Personas","#1a1a2e");
 }
 
-function dibujar(id, tipo, labels, datos, label, color) {
-  if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; }
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  const colores = Array.isArray(color) ? color : labels.map((_,i)=>C(i));
-  CHARTS[id] = new Chart(ctx, {
-    type: tipo,
-    data: {
-      labels,
-      datasets: [{
-        label,
-        data: datos,
-        backgroundColor: tipo==="bar" ? colores.map(c=>c+"cc") : colores,
-        borderColor:     tipo==="bar" ? colores : "#fff",
-        borderWidth:     tipo==="bar" ? 0 : 2,
-        borderRadius:    tipo==="bar" ? 5 : 0,
-      }]
-    },
-    options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{ display: tipo!=="bar", position:"right",
-          labels:{ font:{size:11}, boxWidth:12, padding:10 }},
-        tooltip:{ callbacks:{
-          label: ctx => ` ${ctx.parsed.y ?? ctx.parsed}: ${ctx.dataset.label}`
-        }}
-      },
-      scales: tipo==="bar" ? {
-        y:{ beginAtZero:true, grid:{color:"#e8eaed"},
-            ticks:{color:"#5f6368",font:{size:11}}},
-        x:{ grid:{display:false},
-            ticks:{color:"#5f6368",font:{size:11},maxRotation:30}}
-      } : {},
-    }
-  });
+// ═══════════════════════════════════════════════
+// TAB 2: PRODUCTOS
+// ═══════════════════════════════════════════════
+function renderProductos(){
+  const pp={};
+  FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp[r.producto]=(pp[r.producto]||0)+r.cantidad;});
+  const sorted=Object.entries(pp).sort((a,b)=>b[1]-a[1]);
+  const top15=sorted.slice(0,15);
+  grafico("cProdDetalle","bar",top15.map(e=>e[0]),top15.map(e=>e[1]),"Unidades","#C8102E",true);
+
+  // Por marca
+  const pm={};
+  FIL.forEach(r=>{if(r.marca&&r.cantidad>0)pm[r.marca]=(pm[r.marca]||0)+r.cantidad;});
+  grafico("cMarcaUnd","doughnut",Object.keys(pm),Object.values(pm),"Unidades",
+    ["C8102E","1a1a2e","1e7e34","1a73e8","f59e0b"].map(c=>"#"+c));
 }
 
-// ─────────────────────────────────────────────
-// TABLA
-// ─────────────────────────────────────────────
-function renderTabla() {
-  const tbody = document.getElementById("tablaBody");
-  document.getElementById("countLabel").textContent =
-    `${DATOS_FIL.length} registro${DATOS_FIL.length!==1?"s":""}`;
-
-  if (!DATOS_FIL.length) {
-    tbody.innerHTML = `<tr><td colspan="12">
-      <div class="empty"><div class="empty-ico">📊</div><p>Sin datos para los filtros seleccionados</p></div>
-    </td></tr>`;
+// ═══════════════════════════════════════════════
+// TAB 3: TABLA
+// ═══════════════════════════════════════════════
+function renderTabla(){
+  document.getElementById("cntBadge").textContent=`${FIL.length} registro${FIL.length!==1?"s":""}`;
+  const tbody=document.getElementById("tablaBody");
+  if(!FIL.length){
+    tbody.innerHTML=`<tr><td colspan="12"><div class="empty"><div class="empty-ico">📊</div><p>Sin datos para los filtros seleccionados</p></div></td></tr>`;
     return;
   }
-
-  tbody.innerHTML = DATOS_FIL.map(r => `
+  tbody.innerHTML=FIL.map(r=>`
     <tr>
-      <td>${r.fecha||"—"}</td>
-      <td>${r.supervisor||"—"}</td>
-      <td><span class="badge badge-rojo">${r.marca||"—"}</span></td>
-      <td>${r.local||"—"}</td>
-      <td><span class="badge badge-azul">${r.tipo||"—"}</span></td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.tematica}">${r.tematica||"—"}</td>
-      <td>${r.hombres||""}</td>
-      <td>${r.mujeres||""}</td>
-      <td>${r.ninos||""}</td>
-      <td>${r.producto||"—"}</td>
-      <td>${r.cantidad||""}</td>
-      <td>${r.evidencia
-        ? `<a class="evidencia-link" href="${r.evidencia}" target="_blank">📎 Ver</a>`
-        : "—"}</td>
+      <td style="white-space:nowrap;font-size:.78rem;color:var(--gris4)">${r.fecha||"—"}</td>
+      <td style="font-weight:600">${r.supervisor||"—"}</td>
+      <td><span class="badge b-rojo">${r.marca||"—"}</span></td>
+      <td style="font-size:.8rem">${r.local||"—"}</td>
+      <td><span class="badge b-azul">${r.tipo||"—"}</span></td>
+      <td style="font-size:.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.tematica}">${r.tematica||"—"}</td>
+      <td style="text-align:center">${r.hombres||""}</td>
+      <td style="text-align:center">${r.mujeres||""}</td>
+      <td style="text-align:center">${r.ninos||""}</td>
+      <td style="font-size:.8rem">${r.producto||"—"}</td>
+      <td style="text-align:center;font-weight:700;color:var(--verde)">${r.cantidad||""}</td>
+      <td>${r.evidencia?`<a class="ev-link" href="${r.evidencia}" target="_blank">📎 Ver</a>`:"—"}</td>
     </tr>`).join("");
 }
 
-// ─────────────────────────────────────────────
-// FOTOS
-// ─────────────────────────────────────────────
-function renderFotos() {
-  const grid = document.getElementById("fotosGrid");
-  const conEvidencia = DATOS_FIL.filter(r => r.evidencia && r.evidencia.startsWith("http"));
-
-  if (!conEvidencia.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
-      <div class="empty-ico">📷</div><p>Sin evidencias fotográficas</p></div>`;
+// ═══════════════════════════════════════════════
+// TAB 4: FOTOS
+// ═══════════════════════════════════════════════
+function renderFotos(){
+  const grid=document.getElementById("fotosGrid");
+  const conFoto=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
+  if(!conFoto.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📷</div><p>Sin evidencias fotográficas en este período</p></div>`;
     return;
   }
+  // Deduplicar por URL
+  const seen=new Set();
+  const unicas=conFoto.filter(r=>{if(seen.has(r.evidencia))return false;seen.add(r.evidencia);return true;});
 
-  grid.innerHTML = conEvidencia.map(r => `
-    <div class="foto-item" onclick="abrirFoto('${r.evidencia}')">
-      <img src="${r.evidencia.replace('/view','/preview')}"
-           onerror="this.parentElement.innerHTML='<div class=foto-placeholder>🖼️</div><div class=foto-caption>${r.marca} · ${r.local}</div>'"
-           alt="Evidencia">
-      <div class="foto-caption">${r.marca} · ${r.local} · ${r.fecha}</div>
-    </div>`).join("");
+  grid.innerHTML=unicas.map(r=>{
+    // Convertir URL de Drive a URL de previsualización
+    const preview = convertirUrlDrive(r.evidencia);
+    return `<div class="foto-card" onclick="abrirFoto('${r.evidencia}')">
+      <img src="${preview}"
+           onerror="this.parentElement.innerHTML='<div class=foto-placeholder>🖼️</div>'"
+           alt="Evidencia" loading="lazy">
+      <div class="foto-caption">${r.marca}<br>${r.local} · ${r.fecha}</div>
+    </div>`;
+  }).join("");
 }
 
-function abrirFoto(url) {
-  document.getElementById("modalFotoImg").src = url;
+function convertirUrlDrive(url){
+  // https://drive.google.com/file/d/ID/view?... → https://drive.google.com/thumbnail?id=ID&sz=w400
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`;
+  return url;
+}
+
+function abrirFoto(url){
+  document.getElementById("modalFotoImg").src=url;
   document.getElementById("modalFoto").classList.add("on");
 }
-function cerrarFoto(e) {
-  if (e.target === document.getElementById("modalFoto")) {
+function cerrarFoto(e){
+  if(e.target===document.getElementById("modalFoto"))
     document.getElementById("modalFoto").classList.remove("on");
-  }
 }
 
-// ─────────────────────────────────────────────
-// GENERAR PPT
-// ─────────────────────────────────────────────
-async function generarPPT() {
-  if (!DATOS_FIL.length) { toast("Sin datos para exportar","err"); return; }
-  const btn = document.getElementById("btnPPT");
-  btn.disabled = true; btn.textContent = "⏳ Generando...";
-  mostrarOverlay("Generando presentación...","Esto puede tomar unos segundos");
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function contarActs(campo){
+  const m={};const v=new Set();
+  FIL.forEach(r=>{
+    const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+    if(r[campo]&&!v.has(campo+k)){v.add(campo+k);m[r[campo]]=(m[r[campo]]||0)+1;}
+  });
+  return m;
+}
 
-  try {
-    const pres = new PptxGenJS();
-    pres.layout  = "LAYOUT_16x9";
-    pres.title   = "+MARKA · Relevamiento de Activaciones";
-    pres.author  = "+MARKA";
+function n(val){ return Math.round(val).toLocaleString("es-PY"); }
 
-    const NEGRO  = "1a1a2e";
-    const ROJO   = "C8102E";
-    const BLANCO = "FFFFFF";
-    const GRIS   = "9aa0a6";
+const COLS=["#C8102E","#1a1a2e","#1e7e34","#1a73e8","#f59e0b","#7c3aed","#0891b2","#db2777","#059669","#d97706","#4f46e5","#0284c7","#16a34a","#dc2626","#9333ea"];
 
-    // ── SLIDE 1: PORTADA ─────────────────────
-    const s1 = pres.addSlide();
-    s1.background = { color: NEGRO };
+function grafico(id, tipo, labels, datos, label, color, horizontal=false){
+  if(CHARTS[id]){CHARTS[id].destroy();delete CHARTS[id];}
+  const ctx=document.getElementById(id);if(!ctx)return;
+  const cols=Array.isArray(color)?color:labels.map((_,i)=>COLS[i%COLS.length]);
+  const isBar=tipo==="bar";
+  CHARTS[id]=new Chart(ctx,{
+    type:tipo,
+    data:{labels,datasets:[{label,data:datos,
+      backgroundColor:isBar?cols.map(c=>c+"cc"):cols,
+      borderColor:isBar?cols:"#fff",
+      borderWidth:isBar?0:2,
+      borderRadius:isBar?5:0,
+    }]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      indexAxis:horizontal?"y":"x",
+      plugins:{
+        legend:{display:tipo!=="bar",position:"right",
+          labels:{font:{size:11},boxWidth:11,padding:9}},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y??ctx.parsed}: ${ctx.dataset.label}`}}
+      },
+      scales:isBar?{
+        y:{beginAtZero:true,grid:{color:"#e8eaed"},ticks:{color:"#5f6368",font:{size:10}}},
+        x:{grid:{display:false},ticks:{color:"#5f6368",font:{size:10},maxRotation:32,maxTicksLimit:12}}
+      }:{},
+    }
+  });
+}
 
-    // Acento rojo izquierda
-    s1.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
+// ═══════════════════════════════════════════════
+// GENERAR PPT — estilo +MARKA
+// ═══════════════════════════════════════════════
+async function generarPPT(){
+  if(!FIL.length){toast("Sin datos para exportar","err");return;}
+  const btn=document.getElementById("btnPPT");
+  btn.disabled=true;btn.textContent="⏳ Generando...";
+  mostrarOverlay("Generando presentación...","Puede tomar unos segundos");
 
-    // Logo +MARKA
-    s1.addShape(pres.shapes.RECTANGLE, { x:0.45, y:0.45, w:1.4, h:0.55, fill:{color:ROJO}, line:{color:ROJO} });
-    s1.addText("+ MARKA", { x:0.45, y:0.45, w:1.4, h:0.55, fontSize:13, bold:true, color:BLANCO, align:"center", valign:"middle", margin:0 });
+  try{
+    const pres=new PptxGenJS();
+    pres.layout="LAYOUT_16x9";
+    pres.title="+MARKA · Tablero de Activaciones";
 
-    s1.addText("TABLERO DE ACTIVACIONES", {
-      x:0.5, y:1.5, w:8, h:0.8, fontSize:32, bold:true, color:BLANCO, charSpacing:3
+    const N="1a1a2e",R="C8102E",W="FFFFFF",G="9aa0a6",D="111827";
+
+    // KPIs
+    const actSet=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+    const nAct=actSet.size;
+    let nPers=0;const pV=new Set();
+    FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV.has(k)){pV.add(k);nPers+=r.hombres+r.mujeres+r.ninos;}});
+    const nUnd=FIL.reduce((s,r)=>s+r.cantidad,0);
+    const nMar=new Set(FIL.map(r=>r.marca).filter(Boolean)).size;
+    const nLoc=new Set(FIL.map(r=>r.local).filter(Boolean)).size;
+
+    function addBar(s){
+      s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
+    }
+    function addFooter(s){
+      s.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA",{x:0,y:5.38,w:10,h:.24,fontSize:7,color:G,charSpacing:4,align:"center"});
+    }
+    function addHeader(s,txt,sub=""){
+      s.addText(txt,{x:.25,y:.15,w:9.5,h:.42,fontSize:10,bold:true,color:G,charSpacing:4});
+      if(sub)s.addText(sub,{x:.25,y:.54,w:9.5,h:.28,fontSize:9,color:"555555"});
+    }
+
+    // ── PORTADA ──
+    const s0=pres.addSlide(); s0.background={color:N};
+    s0.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
+    s0.addShape(pres.shapes.RECTANGLE,{x:.25,y:.3,w:1.6,h:.55,fill:{color:R},line:{color:R}});
+    s0.addText("+ MARKA",{x:.25,y:.3,w:1.6,h:.55,fontSize:14,bold:true,color:W,align:"center",valign:"middle"});
+    s0.addText("TABLERO DE ACTIVACIONES",{x:.25,y:1.3,w:9,h:.85,fontSize:34,bold:true,color:W,charSpacing:2});
+    s0.addText("Relevamiento de Impulsos en Punto de Venta",{x:.25,y:2.2,w:9,h:.45,fontSize:14,color:R,bold:true});
+    s0.addText(`Fecha: ${new Date().toLocaleDateString("es-PY")}  ·  ${FIL.length} registros`,{x:.25,y:2.75,w:9,h:.35,fontSize:11,color:G});
+    addFooter(s0);
+
+    // ── KPIs ──
+    const s1=pres.addSlide(); s1.background={color:N}; addBar(s1);
+    addHeader(s1,"RESUMEN EJECUTIVO");
+    const kpis=[["ACTIVACIONES",String(nAct)],[" PERSONAS",String(nPers)],["UNIDADES",String(nUnd)],["MARCAS",String(nMar)],["LOCALES",String(nLoc)]];
+    const kW=1.8,kG=.08;
+    kpis.forEach(([lbl,val],i)=>{
+      const x=.25+i*(kW+kG);
+      s1.addShape(pres.shapes.RECTANGLE,{x,y:.85,w:kW,h:2,fill:{color:D},line:{color:R,pt:1.5}});
+      s1.addText(val,{x,y:1.0,w:kW,h:.95,fontSize:38,bold:true,color:R,align:"center",valign:"middle"});
+      s1.addText(lbl,{x,y:2.05,w:kW,h:.35,fontSize:8,bold:true,color:W,align:"center",charSpacing:2});
     });
-    s1.addText("Relevamiento de Impulsos · +MARKA", {
-      x:0.5, y:2.35, w:8, h:0.5, fontSize:14, color:ROJO, bold:true
-    });
-    s1.addText(`Trade Marketing  ·  Paraguay`, {
-      x:0.5, y:2.9, w:8, h:0.4, fontSize:11, color:GRIS
-    });
-    s1.addText(`Fecha de generación: ${new Date().toLocaleDateString("es-PY")}`, {
-      x:0.5, y:3.4, w:8, h:0.35, fontSize:10, color:GRIS
-    });
-    s1.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", {
-      x:0.5, y:5.1, w:9, h:0.35, fontSize:9, color:GRIS, charSpacing:4, align:"center"
-    });
 
-    // ── SLIDE 2: KPIs RESUMEN ────────────────
-    const s2 = pres.addSlide();
-    s2.background = { color: NEGRO };
-    s2.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-
-    s2.addText("RESUMEN DE ACTIVACIONES", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
-
-    // Calcular KPIs
-    const actSet = new Set(DATOS_FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
-    const totalAct = actSet.size;
-    let totalPers = 0; const persVisto = new Set();
-    DATOS_FIL.forEach(r => {
-      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-      if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!persVisto.has(key)){
-        persVisto.add(key); totalPers+=r.hombres+r.mujeres+r.ninos;
-      }
+    // Tabla por supervisor
+    const bySup2={};const sV2=new Set();const pV2=new Set();
+    FIL.forEach(r=>{
+      const s=r.supervisor||"—";if(!bySup2[s])bySup2[s]={a:0,p:0,u:0};
+      const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;
+      if(!sV2.has(k)){sV2.add(k);bySup2[s].a++;}
+      const pk=k+"|p";if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV2.has(pk)){pV2.add(pk);bySup2[s].p+=r.hombres+r.mujeres+r.ninos;}
+      bySup2[s].u+=r.cantidad;
     });
-    const totalUnd = DATOS_FIL.reduce((s,r)=>s+r.cantidad,0);
-    const marcasU  = new Set(DATOS_FIL.map(r=>r.marca).filter(Boolean)).size;
-    const localesU = new Set(DATOS_FIL.map(r=>r.local).filter(Boolean)).size;
-
-    const kpiSlide = [
-      { label:"ACTIVACIONES",     valor:totalAct,   sub:"eventos registrados" },
-      { label:"PERSONAS",         valor:totalPers,  sub:"abordadas" },
-      { label:"UNIDADES",         valor:totalUnd,   sub:"vendidas" },
-      { label:"MARCAS",           valor:marcasU,    sub:"trabajadas" },
-      { label:"LOCALES",          valor:localesU,   sub:"visitados" },
-    ];
-
-    const kColW = 1.8, kColGap = 0.05;
-    kpiSlide.forEach((k,i) => {
-      const xk = 0.3 + i*(kColW+kColGap);
-      s2.addShape(pres.shapes.RECTANGLE, { x:xk, y:0.85, w:kColW, h:2.0, fill:{color:"111827"}, line:{color:ROJO,pt:1.5} });
-      s2.addText(String(k.valor), { x:xk, y:1.0, w:kColW, h:0.95, fontSize:38, bold:true, color:ROJO, align:"center", valign:"middle" });
-      s2.addText(k.label, { x:xk, y:2.05, w:kColW, h:0.35, fontSize:8, bold:true, color:BLANCO, align:"center", charSpacing:2 });
-      s2.addText(k.sub,   { x:xk, y:2.4,  w:kColW, h:0.3,  fontSize:8, color:GRIS, align:"center" });
-    });
-
-    // Tabla resumen por supervisor (debajo de KPIs)
-    const porSup2 = {};
-    const supVisto2 = new Set();
-    DATOS_FIL.forEach(r => {
-      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-      if(!porSup2[r.supervisor]) porSup2[r.supervisor]={act:0,pers:0,und:0};
-      if(!supVisto2.has(key)){supVisto2.add(key);porSup2[r.supervisor].act++;}
-      const pk=`${key}|pers`;
-      if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!supVisto2.has(pk)){
-        supVisto2.add(pk);porSup2[r.supervisor].pers+=r.hombres+r.mujeres+r.ninos;
-      }
-      porSup2[r.supervisor].und += r.cantidad;
-    });
-
-    const tabData2 = [
-      [
-        {text:"SUPERVISOR",   options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
-        {text:"ACTIVACIONES", options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
-        {text:"PERSONAS",     options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
-        {text:"UNIDADES",     options:{bold:true,color:BLANCO,fill:{color:ROJO},align:"center"}},
-      ],
-      ...Object.entries(porSup2).map(([s,v])=>[
-        {text:s||"—",    options:{color:BLANCO,fill:{color:"111827"}}},
-        {text:String(v.act),  options:{color:ROJO,bold:true,fill:{color:"111827"},align:"center"}},
-        {text:String(v.pers), options:{color:BLANCO,fill:{color:"111827"},align:"center"}},
-        {text:String(v.und),  options:{color:BLANCO,fill:{color:"111827"},align:"center"}},
+    const tblData=[
+      [{text:"SUPERVISOR",options:{bold:true,color:W,fill:{color:R},align:"center"}},
+       {text:"ACTIVACIONES",options:{bold:true,color:W,fill:{color:R},align:"center"}},
+       {text:"PERSONAS",options:{bold:true,color:W,fill:{color:R},align:"center"}},
+       {text:"UNIDADES",options:{bold:true,color:W,fill:{color:R},align:"center"}}],
+      ...Object.entries(bySup2).map(([s,v])=>[
+        {text:s,options:{color:W,fill:{color:D}}},
+        {text:String(v.a),options:{color:R,bold:true,fill:{color:D},align:"center"}},
+        {text:String(v.p),options:{color:W,fill:{color:D},align:"center"}},
+        {text:String(v.u),options:{color:W,fill:{color:D},align:"center"}}
       ])
     ];
-    s2.addTable(tabData2, { x:0.3, y:3.05, w:9.4, colW:[4,2,2,1.4], fontSize:10,
-      border:{pt:0.5,color:"333355"} });
+    s1.addTable(tblData,{x:.25,y:3.1,w:9.5,colW:[4,2,2,1.5],fontSize:10,border:{pt:.5,color:"333355"}});
+    addFooter(s1);
 
-    s2.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-
-    // ── SLIDE 3: POR MARCA ───────────────────
-    const s3 = pres.addSlide();
-    s3.background = { color: NEGRO };
-    s3.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-    s3.addText("ACTIVACIONES POR MARCA", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
-
-    const porMarca3 = {};
-    const marcaVisto = new Set();
-    DATOS_FIL.forEach(r => {
-      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
-      if(r.marca&&!marcaVisto.has(key)){marcaVisto.add(key);porMarca3[r.marca]=(porMarca3[r.marca]||0)+1;}
+    // ── POR MARCA ──
+    const s2=pres.addSlide(); s2.background={color:N}; addBar(s2);
+    addHeader(s2,"ACTIVACIONES POR MARCA");
+    const bm=contarActs("marca");
+    const bmArr=Object.entries(bm).sort((a,b)=>b[1]-a[1]);
+    const bmMax=Math.max(...bmArr.map(e=>e[1]),1);
+    const barC=["C8102E","E63950","FF6B7A","1a1a2e","2d2d5e","4a4a8a"];
+    bmArr.forEach(([marca,val],i)=>{
+      const y=.95+i*.72;
+      const bw=(val/bmMax)*6;
+      s2.addShape(pres.shapes.RECTANGLE,{x:2.8,y:y+.1,w:bw||.05,h:.48,fill:{color:barC[i%barC.length]},line:{color:barC[i%barC.length]}});
+      s2.addText(marca,{x:.2,y,w:2.5,h:.65,fontSize:11,bold:true,color:W,valign:"middle"});
+      s2.addText(String(val)+" act.",{x:2.85+(bw||.05),y,w:1.5,h:.65,fontSize:13,bold:true,color:R,valign:"middle"});
     });
+    addFooter(s2);
 
-    const marcasArr = Object.entries(porMarca3).sort((a,b)=>b[1]-a[1]);
-    const maxVal = Math.max(...marcasArr.map(m=>m[1]),1);
-    const barColors3 = ["C8102E","E63950","FF6B7A","1a1a2e","2d2d5e","4a4a8a"];
-
-    marcasArr.forEach(([marca,val],i) => {
-      const y = 0.9 + i*0.75;
-      const bw = (val/maxVal)*6.5;
-      s3.addShape(pres.shapes.RECTANGLE, { x:2.8, y:y+0.07, w:bw, h:0.5, fill:{color:barColors3[i%barColors3.length]}, line:{color:barColors3[i%barColors3.length]} });
-      s3.addText(marca, { x:0.3, y:y, w:2.4, h:0.65, fontSize:11, bold:true, color:BLANCO, valign:"middle" });
-      s3.addText(String(val), { x:2.8+bw+0.1, y:y, w:0.6, h:0.65, fontSize:14, bold:true, color:ROJO, valign:"middle" });
+    // ── TOP PRODUCTOS ──
+    const s3=pres.addSlide(); s3.background={color:N}; addBar(s3);
+    addHeader(s3,"TOP PRODUCTOS VENDIDOS");
+    const pp2={};FIL.forEach(r=>{if(r.producto&&r.cantidad>0)pp2[r.producto]=(pp2[r.producto]||0)+r.cantidad;});
+    const topP2=Object.entries(pp2).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const maxP2=Math.max(...topP2.map(p=>p[1]),1);
+    topP2.forEach(([prod,val],i)=>{
+      const y=.9+i*.55;
+      const bw=(val/maxP2)*5.5;
+      s3.addShape(pres.shapes.RECTANGLE,{x:3.5,y:y+.06,w:bw||.05,h:.4,fill:{color:R},line:{color:R}});
+      s3.addText(`${i+1}. ${prod}`,{x:.2,y,w:3.2,h:.52,fontSize:9.5,bold:true,color:W,valign:"middle"});
+      s3.addText(String(val)+" u.",{x:3.55+(bw||.05),y,w:1.2,h:.52,fontSize:11,bold:true,color:R,valign:"middle"});
     });
+    addFooter(s3);
 
-    s3.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-
-    // ── SLIDE 4: TOP PRODUCTOS ───────────────
-    const s4 = pres.addSlide();
-    s4.background = { color: NEGRO };
-    s4.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-    s4.addText("TOP PRODUCTOS VENDIDOS", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
-
-    const porProd4 = {};
-    DATOS_FIL.forEach(r => { if(r.producto) porProd4[r.producto]=(porProd4[r.producto]||0)+r.cantidad; });
-    const topProd4 = Object.entries(porProd4).sort((a,b)=>b[1]-a[1]).slice(0,8);
-    const maxP4 = Math.max(...topProd4.map(p=>p[1]),1);
-
-    topProd4.forEach(([prod,val],i) => {
-      const y = 0.85 + i*0.58;
-      const bw = (val/maxP4)*5.8;
-      s4.addShape(pres.shapes.RECTANGLE, { x:3.2, y:y+0.06, w:bw||0.1, h:0.42, fill:{color:"C8102E"}, line:{color:"C8102E"} });
-      s4.addText(`${i+1}. ${prod}`, { x:0.3, y:y, w:2.8, h:0.55, fontSize:9.5, bold:true, color:BLANCO, valign:"middle" });
-      s4.addText(String(val)+" u.", { x:3.2+(bw||0.1)+0.12, y:y, w:1.2, h:0.55, fontSize:11, bold:true, color:ROJO, valign:"middle" });
+    // ── DETALLE ──
+    const s4=pres.addSlide(); s4.background={color:N}; addBar(s4);
+    addHeader(s4,"DETALLE DE ACTIVACIONES",`Mostrando ${Math.min(FIL.length,15)} de ${FIL.length} registros`);
+    const actMap2={};
+    FIL.forEach(r=>{
+      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}|${r.tipo}`;
+      if(!actMap2[k])actMap2[k]={...r,prods:[],pers:r.hombres+r.mujeres+r.ninos};
+      if(r.producto)actMap2[k].prods.push(`${r.producto}(${r.cantidad})`);
     });
-
-    s4.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-
-    // ── SLIDE 5: DETALLE DE ACTIVACIONES ─────
-    const s5 = pres.addSlide();
-    s5.background = { color: NEGRO };
-    s5.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-    s5.addText("DETALLE DE ACTIVACIONES", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
-
-    // Agrupar por activación única para tabla limpia
-    const actMap = {};
-    DATOS_FIL.forEach(r => {
-      const key=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}|${r.tipo}`;
-      if (!actMap[key]) actMap[key] = {...r, productos:[], personas: r.hombres+r.mujeres+r.ninos};
-      if (r.producto) actMap[key].productos.push(`${r.producto}(${r.cantidad})`);
-    });
-    const actArr = Object.values(actMap).slice(0,12);
-
-    const tabDet = [
-      [
-        {text:"FECHA",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-        {text:"SUPERVISOR",  options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-        {text:"MARCA",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-        {text:"LOCAL",       options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-        {text:"TIPO",        options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-        {text:"PERSONAS",    options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8,align:"center"}},
-        {text:"PRODUCTOS",   options:{bold:true,color:BLANCO,fill:{color:ROJO},fontSize:8}},
-      ],
-      ...actArr.map((r,i)=>{
-        const bg = i%2===0 ? "111827" : "0d1424";
-        return [
-          {text:r.fecha||"—",     options:{color:GRIS,fill:{color:bg},fontSize:8}},
-          {text:r.supervisor||"—",options:{color:BLANCO,fill:{color:bg},fontSize:8,bold:true}},
-          {text:r.marca||"—",     options:{color:ROJO,fill:{color:bg},fontSize:8,bold:true}},
-          {text:r.local||"—",     options:{color:GRIS,fill:{color:bg},fontSize:8}},
-          {text:r.tipo||"—",      options:{color:GRIS,fill:{color:bg},fontSize:8}},
-          {text:String(r.personas||0),options:{color:BLANCO,fill:{color:bg},fontSize:8,align:"center"}},
-          {text:(r.productos.slice(0,3).join(", "))||"—",options:{color:GRIS,fill:{color:bg},fontSize:7.5}},
+    const actArr2=Object.values(actMap2).slice(0,12);
+    const tDet=[
+      [{text:"FECHA",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
+       {text:"SUPERVISOR",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
+       {text:"MARCA",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
+       {text:"LOCAL",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
+       {text:"TIPO",options:{bold:true,color:W,fill:{color:R},fontSize:8}},
+       {text:"PERS.",options:{bold:true,color:W,fill:{color:R},fontSize:8,align:"center"}},
+       {text:"PRODUCTOS",options:{bold:true,color:W,fill:{color:R},fontSize:8}}],
+      ...actArr2.map((r,i)=>{
+        const bg=i%2===0?D:"0d1424";
+        return[
+          {text:r.fecha||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
+          {text:r.supervisor||"—",options:{color:W,fill:{color:bg},fontSize:7.5,bold:true}},
+          {text:r.marca||"—",options:{color:R,fill:{color:bg},fontSize:7.5,bold:true}},
+          {text:r.local||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
+          {text:r.tipo||"—",options:{color:G,fill:{color:bg},fontSize:7.5}},
+          {text:String(r.pers||0),options:{color:W,fill:{color:bg},fontSize:7.5,align:"center"}},
+          {text:(r.prods.slice(0,3).join(", "))||"—",options:{color:G,fill:{color:bg},fontSize:7}},
         ];
       })
     ];
+    s4.addTable(tDet,{x:.15,y:.85,w:9.7,colW:[1.1,1.6,1.3,1.3,1.5,.7,2.2],fontSize:8,rowH:.31,border:{pt:.3,color:"222244"}});
+    addFooter(s4);
 
-    s5.addTable(tabDet, { x:0.2, y:0.75, w:9.6,
-      colW:[1.1,1.6,1.3,1.2,1.4,0.85,2.1], fontSize:8, rowH:0.31,
-      border:{pt:0.3,color:"222244"} });
+    // ── CIERRE ──
+    const sc=pres.addSlide(); sc.background={color:N};
+    sc.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.1,h:5.625,fill:{color:R},line:{color:R}});
+    sc.addShape(pres.shapes.RECTANGLE,{x:.25,y:.3,w:1.6,h:.55,fill:{color:R},line:{color:R}});
+    sc.addText("+ MARKA",{x:.25,y:.3,w:1.6,h:.55,fontSize:14,bold:true,color:W,align:"center",valign:"middle"});
+    sc.addText("¡Hacemos que\ntu marca sea +!",{x:.25,y:1.4,w:9.5,h:1.4,fontSize:36,bold:true,color:W,align:"center"});
+    sc.addText("CONTACTO",{x:.25,y:3.2,w:9.5,h:.32,fontSize:9,color:G,charSpacing:4,align:"center"});
+    sc.addText("Diana Moreno  ·  dianam@masmarka.com.py  ·  www.masmarka.com.py",{x:.25,y:3.6,w:9.5,h:.4,fontSize:12,color:W,align:"center"});
+    addFooter(sc);
 
-    if (actArr.length === 12) {
-      s5.addText(`Mostrando 12 de ${Object.values(actMap).length} activaciones`, {
-        x:0.3, y:5.1, w:9, h:0.25, fontSize:8, color:GRIS, align:"right"
-      });
-    }
-    s5.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-
-    // ── SLIDE 6: EVIDENCIAS FOTOGRÁFICAS ─────
-    const fotosConLink = DATOS_FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http")).slice(0,6);
-    if (fotosConLink.length > 0) {
-      const s6 = pres.addSlide();
-      s6.background = { color: NEGRO };
-      s6.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-      s6.addText("EVIDENCIAS FOTOGRÁFICAS", { x:0.3, y:0.2, w:9, h:0.45, fontSize:10, color:GRIS, bold:true, charSpacing:4 });
-
-      // Grid 3×2
-      const cols = 3, rows = 2, fw = 2.9, fh = 2.1, xStart=0.3, yStart=0.8, gap=0.1;
-      fotosConLink.forEach((r,i) => {
-        const col = i%cols, row = Math.floor(i/cols);
-        const fx = xStart + col*(fw+gap), fy = yStart + row*(fh+gap);
-        // Marco
-        s6.addShape(pres.shapes.RECTANGLE, { x:fx, y:fy, w:fw, h:fh, fill:{color:"111827"}, line:{color:ROJO,pt:1} });
-        // Imagen
-        try {
-          s6.addImage({ path:r.evidencia, x:fx, y:fy, w:fw, h:fh-0.3, sizing:{type:"cover",w:fw,h:fh-0.3} });
-        } catch(e) {
-          s6.addText("📷", { x:fx, y:fy, w:fw, h:fh-0.3, fontSize:28, align:"center", valign:"middle" });
-        }
-        // Caption
-        s6.addShape(pres.shapes.RECTANGLE, { x:fx, y:fy+fh-0.3, w:fw, h:0.3, fill:{color:"111827"}, line:{color:"111827"} });
-        s6.addText(`${r.marca} · ${r.local} · ${r.fecha}`, {
-          x:fx, y:fy+fh-0.3, w:fw, h:0.3, fontSize:7, color:GRIS, align:"center", valign:"middle"
-        });
-      });
-
-      s6.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-    }
-
-    // ── SLIDE CIERRE ──────────────────────────
-    const sc = pres.addSlide();
-    sc.background = { color: NEGRO };
-    sc.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:0.12, h:5.625, fill:{color:ROJO}, line:{color:ROJO} });
-    sc.addShape(pres.shapes.RECTANGLE, { x:0.45, y:0.45, w:1.4, h:0.55, fill:{color:ROJO}, line:{color:ROJO} });
-    sc.addText("+ MARKA", { x:0.45, y:0.45, w:1.4, h:0.55, fontSize:13, bold:true, color:BLANCO, align:"center", valign:"middle", margin:0 });
-    sc.addText("¡Hacemos que\ntu marca sea +!", { x:0.5, y:1.4, w:9, h:1.5, fontSize:36, bold:true, color:BLANCO, align:"center" });
-    sc.addText("CONTACTO", { x:0.5, y:3.2, w:9, h:0.35, fontSize:9, color:GRIS, charSpacing:4, align:"center" });
-    sc.addText("Diana Moreno  ·  dianam@masmarka.com.py", { x:0.5, y:3.6, w:9, h:0.4, fontSize:12, color:BLANCO, align:"center" });
-    sc.addText("www.masmarka.com.py", { x:0.5, y:4.1, w:9, h:0.35, fontSize:11, color:ROJO, align:"center" });
-    sc.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA", { x:0, y:5.35, w:10, h:0.25, fontSize:8, color:GRIS, charSpacing:3, align:"center" });
-
-    // GUARDAR
-    const fecha = new Date().toLocaleDateString("es-PY").replace(/\//g,"-");
-    await pres.writeFile({ fileName: `MARKA_Activaciones_${fecha}.pptx` });
-    toast("✓ PPT descargado exitosamente","ok");
-
-  } catch(e) {
+    const fecha=new Date().toLocaleDateString("es-PY").replace(/\//g,"-");
+    await pres.writeFile({fileName:`MARKA_Activaciones_${fecha}.pptx`});
+    toast("✓ PPT descargado","ok");
+  }catch(e){
     console.error(e);
-    toast("Error generando PPT: "+e.message,"err");
+    toast("Error: "+e.message,"err");
   }
-
   ocultarOverlay();
-  btn.disabled = false;
-  btn.innerHTML = "⬇ Descargar PPT";
+  btn.disabled=false;
+  btn.innerHTML="⬇ Descargar PPT";
 }
 
-// ─────────────────────────────────────────────
-// UTILS
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// OVERLAY / TOAST
+// ═══════════════════════════════════════════════
 function mostrarOverlay(txt,sub){
-  document.getElementById("overlayTxt").textContent = txt||"Cargando...";
-  document.getElementById("overlaySub").textContent = sub||"";
+  document.getElementById("overlayTxt").textContent=txt||"";
+  document.getElementById("overlaySub").textContent=sub||"";
   document.getElementById("overlay").classList.add("on");
 }
 function ocultarOverlay(){ document.getElementById("overlay").classList.remove("on"); }
 let _tt;
 function toast(msg,tipo){
   const el=document.getElementById("toast");
-  el.textContent=msg; el.className="toast "+(tipo||"ok");
-  clearTimeout(_tt);
-  requestAnimationFrame(()=>el.classList.add("on"));
+  el.textContent=msg;el.className="toast "+(tipo||"ok");
+  clearTimeout(_tt);requestAnimationFrame(()=>el.classList.add("on"));
   _tt=setTimeout(()=>el.classList.remove("on"),3500);
 }
 </script>
