@@ -489,11 +489,11 @@ async function loadPptxGen(){
 async function genPPT(){
   if(!FIL.length){tst("Sin datos para exportar","er2");return;}
   const btn=document.getElementById("btnP");
-  btn.disabled=true;btn.textContent="⏳ Cargando...";
+  btn.disabled=true;btn.textContent="Cargando...";
   showOv("Cargando librería PPT...","Un momento por favor");
   const loaded=await loadPptxGen();
-  if(!loaded){tst("No se pudo cargar la librería","er2");hideOv();btn.disabled=false;btn.innerHTML="⬇ Exportar PPT";return;}
-  btn.textContent="⏳ Generando...";
+  if(!loaded){tst("No se pudo cargar la librería","er2");hideOv();btn.disabled=false;btn.innerHTML="Exportar PPT";return;}
+  btn.textContent="Generando...";
   document.getElementById("ovt").textContent="Generando presentación...";
   try{
     const pres=new PptxGenJS();
@@ -558,7 +558,7 @@ async function genPPT(){
     const s0=pres.addSlide();base(s0);
     logo(s0,.22,.24);
     s0.addShape(pres.shapes.RECTANGLE,{x:.22,y:.72,w:1.5,h:.025,fill:{color:ACC},line:{color:ACC}});
-    const mTit=marcasU.join(" · ").toUpperCase();
+    const mTit=marcasU.join(" - ").toUpperCase();
     s0.addText(mTit,{x:.22,y:.9,w:9.4,h:.9,fontSize:mTit.length>20?28:36,bold:true,color:WW});
     s0.addText(tiposU.join(" & ").toUpperCase(),{x:.22,y:1.88,w:9,h:.36,fontSize:11,color:W70,charSpacing:.5});
     s0.addText(mesAnio,{x:.22,y:2.34,w:9,h:.28,fontSize:9.5,italic:true,color:W40});
@@ -668,7 +668,7 @@ async function genPPT(){
         const sV=pres.addSlide();base(sV);
         redLabel(sV,"Ventas concretadas",.22,.16);
         sV.addText("PRODUCTOS VENDIDOS",{x:.22,y:.34,w:7.2,h:.44,fontSize:20,bold:true,color:WW});
-        sV.addText(a.marca+" · "+a.local+" · "+a.fecha,{x:.22,y:.8,w:7,h:.24,fontSize:8.5,color:W40});
+        sV.addText(a.marca+" - "+a.local+" - "+a.fecha,{x:.22,y:.8,w:7,h:.24,fontSize:8.5,color:W40});
 
         // Caja total — arriba derecha igual imagen 2
         sV.addShape(pres.shapes.RECTANGLE,{x:7.9,y:.16,w:1.86,h:.9,fill:{color:CARD},line:{color:LINE,pt:.5}});
@@ -717,9 +717,8 @@ async function genPPT(){
       lote.forEach((r,j)=>{
         const x=.22+j*(fW+.18);
         sF.addShape(pres.shapes.RECTANGLE,{x,y:.94,w:fW,h:3.9,fill:{color:CARD},line:{color:LINE,pt:.5}});
-        sF.addText("📷",{x,y:2.2,w:fW,h:.5,fontSize:22,align:"center"});
-        sF.addText(r.marca+"
-"+r.local+" · "+r.fecha,{x,y:4.38,w:fW,h:.46,fontSize:7,color:W40,align:"center"});
+        sF.addText("[foto]",{x,y:2.2,w:fW,h:.5,fontSize:14,color:"555555",align:"center"});
+        sF.addText(r.marca+" / "+r.local+" - "+r.fecha,{x,y:4.38,w:fW,h:.46,fontSize:7,color:W40,align:"center"});
       });
       footer(sF);
     }
@@ -742,7 +741,7 @@ async function genPPT(){
   }
   hideOv();
   document.getElementById("btnP").disabled=false;
-  document.getElementById("btnP").innerHTML="⬇ Exportar PPT";
+  document.getElementById("btnP").innerHTML="Exportar PPT";
 }
 </script>
 </body>
