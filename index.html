@@ -235,7 +235,7 @@ tbody td{padding:8px 12px;vertical-align:middle}
   <div class="panel">
     <div class="ph"><div class="pt"><div class="pip" style="background:var(--r)"></div>Registros</div><span class="cnt" id="cBd">—</span></div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>Fecha</th><th>Supervisor</th><th>Marca</th><th>Local</th><th>Tipo</th><th>Temática</th><th>👨</th><th>👩</th><th>👶</th><th>Producto</th><th>Cant.</th><th>Evidencia</th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Supervisor</th><th>Horario</th><th>Marca</th><th>Local</th><th>Tipo</th><th>Temática</th><th>👥 Adultos</th><th>👧 Niños</th><th>Producto</th><th>Cant.</th><th>Evidencia</th></tr></thead>
       <tbody id="tBd"></tbody>
     </table></div>
   </div>
@@ -300,8 +300,8 @@ function pCSV(txt){
   const ls=txt.trim().split(/\r?\n/);if(ls.length<2)return[];
   return ls.slice(1).map(l=>{
     const c=csvR(l);
-    return{fecha:cl(c[0]),supervisor:cl(c[1]),marca:cl(c[2]),local:cl(c[3]),
-      tipo:cl(c[4]),tematica:cl(c[5]),hombres:n0(c[6]),mujeres:n0(c[7]),ninos:n0(c[8]),
+    return{fecha:cl(c[0]),supervisor:cl(c[1]),hora:cl(c[2]),marca:cl(c[3]),local:cl(c[4]),
+      tipo:cl(c[5]),tematica:cl(c[6]),adultos:n0(c[7]),ninos:n0(c[8]),
       producto:cl(c[9]),cantidad:n0(c[10]),evidencia:cl(c[11])};
   }).filter(r=>r.fecha||r.supervisor||r.marca);
 }
@@ -345,7 +345,7 @@ function renderAll(){
 function rKPIs(){
   const aS=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
   let nP=0;const pS=new Set();
-  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pS.has(k)){pS.add(k);nP+=r.hombres+r.mujeres+r.ninos;}});
+  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.adultos>0||r.ninos>0)&&!pS.has(k)){pS.add(k);nP+=r.adultos+r.ninos;}});
   const nU=FIL.reduce((s,r)=>s+r.cantidad,0);
   document.getElementById("kEl").innerHTML=[
     {i:"⚡",l:"Activaciones",v:aS.size,s:"eventos registrados",c:""},
@@ -366,7 +366,7 @@ function rR(){
   const bm=cntA("marca");ch("cMa","doughnut",Object.keys(bm),Object.values(bm),"Acts",PAL);
   const bt=cntA("tipo");ch("cTi","doughnut",Object.keys(bt),Object.values(bt),"Acts",PAL);
   const pm={};const pmV=new Set();
-  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pmV.has(k)){pmV.add(k);pm[r.marca]=(pm[r.marca]||0)+r.hombres+r.mujeres+r.ninos;}});
+  FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;if((r.adultos>0||r.ninos>0)&&!pmV.has(k)){pmV.add(k);pm[r.marca]=(pm[r.marca]||0)+r.adultos+r.ninos;}});
   ch("cPM","bar",Object.keys(pm),Object.values(pm),"Personas","#0d0f1a",false,false);
   const bl=cntA("local");const tl=Object.entries(bl).sort((a,b)=>b[1]-a[1]).slice(0,10);
   ch("cLo","bar",tl.map(e=>e[0]),tl.map(e=>e[1]),"Acts","#f59e0b",false,true);
@@ -380,7 +380,7 @@ function rS(){
   FIL.forEach(r=>{
     const s=r.supervisor||"—";if(!bs[s])bs[s]={a:0,p:0,u:0,marcas:new Set(),locales:new Set()};
     const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;if(!sV.has(k)){sV.add(k);bs[s].a++;}
-    const pk=k+"|p";if((r.hombres>0||r.mujeres>0||r.ninos>0)&&!pV.has(pk)){pV.add(pk);bs[s].p+=r.hombres+r.mujeres+r.ninos;}
+    const pk=k+"|p";if((r.adultos>0||r.ninos>0)&&!pV.has(pk)){pV.add(pk);bs[s].p+=r.adultos+r.ninos;}
     bs[s].u+=r.cantidad;if(r.marca)bs[s].marcas.add(r.marca);if(r.local)bs[s].locales.add(r.local);
   });
   document.getElementById("sgEl").innerHTML=Object.entries(bs).map(([n,d])=>`
@@ -415,7 +415,8 @@ function rT(){
     <td style="font-size:.78rem">${r.local||"—"}</td>
     <td><span class="chip cb_">${r.tipo||"—"}</span></td>
     <td style="font-size:.73rem;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${es(r.tematica)}">${r.tematica||"—"}</td>
-    <td style="text-align:center">${r.hombres||""}</td><td style="text-align:center">${r.mujeres||""}</td><td style="text-align:center">${r.ninos||""}</td>
+    <td><span class="chip cn">${r.hora||"—"}</span></td>
+    <td style="text-align:center">${r.adultos||""}</td><td style="text-align:center">${r.ninos||""}</td>
     <td style="font-size:.78rem">${r.producto||"—"}</td>
     <td style="text-align:center;font-weight:700;color:var(--grn)">${r.cantidad||""}</td>
     <td>${r.evidencia?`<a class="evl" href="${r.evidencia}" target="_blank">📎 Ver</a>`:"—"}</td>
@@ -537,7 +538,7 @@ async function genPPT(){
       if(!actsMap[k])actsMap[k]={
         fecha:r.fecha,supervisor:r.supervisor,marca:r.marca,local:r.local,
         tipo:r.tipo,tematica:r.tematica,
-        hombres:r.hombres,mujeres:r.mujeres,ninos:r.ninos,
+        adultos:r.adultos,ninos:r.ninos,hora:r.hora,
         prods:{},fotos:[]
       };
       if(r.producto&&r.cantidad>0){
@@ -582,7 +583,7 @@ async function genPPT(){
     for(const a of acts){
       const prodsArr=Object.entries(a.prods).sort((x,y)=>y[1]-x[1]);
       const totalProd=prodsArr.reduce((s,[,v])=>s+v,0);
-      const totalPers=a.hombres+a.mujeres+a.ninos;
+      const totalPers=a.adultos+a.ninos;
 
       // ── SLIDE A: Detalle de activación ──
       const sA=pres.addSlide();
@@ -590,7 +591,7 @@ async function genPPT(){
 
       // Encabezado
       addSectionLabel(sA,"Activación",0.22,0.18,4);
-      sA.addText(a.local.toUpperCase(),{x:.22,y:.38,w:7,h:.48,fontSize:20,bold:true,color:WW});
+      sA.addText(a.local.toUpperCase()+(a.hora?' — '+a.hora:''),{x:.22,y:.38,w:7,h:.48,fontSize:20,bold:true,color:WW});
       sA.addText(`${a.supervisor}  ·  ${a.fecha}`,{x:.22,y:.88,w:7,h:.28,fontSize:9,color:GD});
       // Marca pill
       sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:1.24,w:2.2,h:.3,fill:{color:ACC},line:{color:ACC}});
@@ -604,33 +605,23 @@ async function genPPT(){
       // ── PERSONAS ──
       addSectionLabel(sA,"Personas abordadas",.22,1.76,4);
 
-      // Solo mostrar las categorías con valor > 0
-      const personasData=[];
-      if(a.hombres>0) personasData.push({l:"HOMBRES",v:a.hombres,i:"♂"});
-      if(a.mujeres>0) personasData.push({l:"MUJERES",v:a.mujeres,i:"♀"});
-      if(a.ninos>0)   personasData.push({l:"NIÑOS",  v:a.ninos,  i:"★"});
+      const vAdultos = a.adultos || 0;
+      const vNinos   = a.ninos   || 0;
 
-      if(personasData.length>0){
-        const cW=2.6,cH=1.4,gap=.18;
-        const totalW=personasData.length*(cW+gap)-gap;
-        const startX=.22;
-        personasData.forEach((p,i)=>{
-          const x=startX+i*(cW+gap);
-          // Card persona
-          sA.addShape(pres.shapes.RECTANGLE,{x,y:2.04,w:cW,h:cH,fill:{color:CARD},line:{color:LINE,pt:.5}});
-          // Número grande
-          sA.addText(String(p.v),{x,y:2.1,w:cW,h:.85,fontSize:52,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
-          // Label
-          sA.addShape(pres.shapes.RECTANGLE,{x,y:3.06,w:cW,h:.3,fill:{color:CARD2},line:{color:CARD2}});
-          sA.addText(p.l,{x,y:3.06,w:cW,h:.3,fontSize:7.5,bold:true,color:GG,align:"center",valign:"middle",charSpacing:3});
-        });
-        // TOTAL
-        const txEnd=startX+personasData.length*(cW+gap);
-        sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:3.46,w:totalW,h:.32,fill:{color:ACC},line:{color:ACC}});
-        sA.addText(`TOTAL: ${totalPers} PERSONAS`,{x:.22,y:3.46,w:totalW,h:.32,fontSize:10,bold:true,color:WW,align:"center",valign:"middle",charSpacing:1});
-      } else {
-        sA.addText("Sin datos de personas",{x:.22,y:2.1,w:6,h:.4,fontSize:11,color:GD,italic:true});
-      }
+      // 2 cajas grandes centradas
+      const cW=4.4, cH=1.7, gap=.3, startX=.22;
+      const cajas=[{l:"ADULTOS",v:vAdultos},{l:"NIÑOS",v:vNinos}];
+      cajas.forEach((p,i)=>{
+        const x=startX+i*(cW+gap);
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:2.0,w:cW,h:cH,fill:{color:CARD},line:{color:i===0?ACC:LINE,pt:i===0?1.5:.5}});
+        sA.addText(String(p.v),{x,y:2.05,w:cW,h:1.05,fontSize:64,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:3.0,w:cW,h:.38,fill:{color:i===0?ACC:CARD2},line:{color:i===0?ACC:CARD2}});
+        sA.addText(p.l,{x,y:3.0,w:cW,h:.38,fontSize:9,bold:true,color:WW,align:"center",valign:"middle",charSpacing:4});
+      });
+      // TOTAL barra completa
+      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:3.5,w:9.4,h:.36,fill:{color:"111111"},line:{color:LINE,pt:.5}});
+      sA.addText("TOTAL ABORDADOS",{x:.22,y:3.5,w:6,h:.36,fontSize:9,color:GG,valign:"middle",charSpacing:2,bold:true});
+      sA.addText(String(totalPers),{x:6.5,y:3.5,w:3.1,h:.36,fontSize:14,bold:true,color:ACC,align:"right",valign:"middle",fontFace:"Arial Black"});
 
       // ── TEMÁTICA ──
       addDivider(sA,.22,3.9,9.4);
