@@ -432,13 +432,24 @@ function rF(){
   grid.innerHTML=unicas.map(r=>{
     const m=r.evidencia.match(/\/d\/([a-zA-Z0-9_-]+)/);
     const prev=m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`:r.evidencia;
-    return`<div class="foto-card" onclick="mfO('${r.evidencia}')">
+    return`<div class="foto-card" onclick="mfO('${r.evidencia}')" title="Click para ver foto completa">
       <img src="${prev}" onerror="this.style.display='none'" loading="lazy">
       <div class="foto-cap"><strong>${es(r.marca)}</strong>${es(r.local)} · ${es(r.fecha)}</div>
     </div>`;
   }).join("");
 }
-function mfO(u){document.getElementById("mfi").src=u;document.getElementById("mfw").classList.add("on");}
+function mfO(u){
+  // Para URLs de Drive, abrir en nueva pestaña (evita restricciones de iframe)
+  if(u.includes("drive.google.com/file")){
+    window.open(u,"_blank");
+    return;
+  }
+  // Para thumbnails u otras URLs, mostrar en modal
+  const m=u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const src=m?"https://drive.google.com/thumbnail?id="+m[1]+"&sz=w800":u;
+  document.getElementById("mfi").src=src;
+  document.getElementById("mfw").classList.add("on");
+}
 function mfC(e){if(e.target===document.getElementById("mfw"))document.getElementById("mfw").classList.remove("on");}
 
 function ch(id,tipo,labels,data,label,color,hl=false,hb=false){
@@ -717,7 +728,15 @@ async function genPPT(){
       lote.forEach((r,j)=>{
         const x=.22+j*(fW+.18);
         sF.addShape(pres.shapes.RECTANGLE,{x,y:.94,w:fW,h:3.9,fill:{color:CARD},line:{color:LINE,pt:.5}});
-        sF.addText("[foto]",{x,y:2.2,w:fW,h:.5,fontSize:14,color:"555555",align:"center"});
+        // Mostrar link clickeable ya que PptxGenJS no puede cargar imágenes de Drive
+        sF.addText("Ver foto",{
+          x,y:2.0,w:fW,h:.36,fontSize:10,color:ACC,align:"center",valign:"middle",
+          bold:true,hyperlink:{url:r.evidencia}
+        });
+        sF.addText(r.evidencia,{
+          x,y:2.44,w:fW,h:.28,fontSize:6,color:W40,align:"center",
+          hyperlink:{url:r.evidencia}
+        });
         sF.addText(r.marca+" / "+r.local+" - "+r.fecha,{x,y:4.38,w:fW,h:.46,fontSize:7,color:W40,align:"center"});
       });
       footer(sF);
