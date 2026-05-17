@@ -492,58 +492,61 @@ async function genPPT(){
   btn.disabled=true;btn.textContent="⏳ Cargando...";
   showOv("Cargando librería PPT...","Un momento por favor");
   const loaded=await loadPptxGen();
-  if(!loaded){tst("No se pudo cargar la librería PPT","er2");hideOv();btn.disabled=false;btn.innerHTML="⬇ Exportar PPT";return;}
+  if(!loaded){tst("No se pudo cargar la librería","er2");hideOv();btn.disabled=false;btn.innerHTML="⬇ Exportar PPT";return;}
   btn.textContent="⏳ Generando...";
   document.getElementById("ovt").textContent="Generando presentación...";
   try{
     const pres=new PptxGenJS();
     pres.layout="LAYOUT_16x9";
-    // PALETA — oscuro elegante, rojo solo como acento
-    const BG="0f0f0f",   // fondo casi negro
-          ACC="C8102E",  // rojo acento (solo para detalles)
-          WW="ffffff",
-          GG="aaaaaa",   // gris claro
-          GD="666666",   // gris medio
-          CARD="1e1e1e", // fondo de cards
-          CARD2="2a2a2a",// cards alternas
-          LINE="333333"; // líneas divisorias
+
+    // ── PALETA — escala de grises con rojo solo como acento ──
+    const BG   ="111111",  // fondo principal casi negro
+          BG2  ="1a1a1a",  // fondo secundario
+          CARD ="222222",  // cards
+          CARD2="2d2d2d",  // cards alternas / labels
+          CARD3="383838",  // cards claras
+          LINE ="404040",  // líneas divisorias
+          ACC  ="C8102E",  // rojo — solo acento
+          WW   ="ffffff",  // blanco puro
+          W80  ="cccccc",  // blanco 80%
+          W50  ="888888",  // gris medio
+          W30  ="555555";  // gris oscuro
 
     // ── HELPERS ──
-    function addBase(s){
+    function base(s){
       s.background={color:BG};
-      // Solo una línea roja fina en la izquierda
-      s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.06,h:5.625,fill:{color:ACC},line:{color:ACC}});
+      // línea roja muy fina a la izquierda
+      s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:.05,h:5.625,fill:{color:ACC},line:{color:ACC}});
     }
-    function addFooter(s){
-      s.addShape(pres.shapes.RECTANGLE,{x:0,y:5.35,w:10,h:.275,fill:{color:"1a1a1a"},line:{color:"1a1a1a"}});
-      s.addText("VISIBILIDAD  ·  VENTAS  ·  MARCA",{x:0,y:5.35,w:10,h:.275,fontSize:7,color:GD,charSpacing:5,align:"center",valign:"middle"});
+    function footer(s){
+      s.addShape(pres.shapes.RECTANGLE,{x:0,y:5.38,w:10,h:.245,fill:{color:BG2},line:{color:BG2}});
+      s.addText("+ MARKA  ·  VISIBILIDAD  ·  VENTAS  ·  MARCA",{
+        x:0,y:5.38,w:10,h:.245,fontSize:6.5,color:W30,charSpacing:4,align:"center",valign:"middle"
+      });
     }
-    function addLogo(s,x,y){
-      // Caja roja + texto
-      s.addShape(pres.shapes.RECTANGLE,{x,y,w:.4,h:.36,fill:{color:ACC},line:{color:ACC}});
-      s.addText("+",{x,y,w:.4,h:.36,fontSize:15,bold:true,color:WW,align:"center",valign:"middle"});
-      s.addText("MARKA",{x:x+.46,y:y+.05,w:1.1,h:.26,fontSize:14,bold:true,color:WW});
+    function secLabel(s,txt,x,y){
+      s.addText(txt.toUpperCase(),{x,y,w:9,h:.2,fontSize:6,bold:true,color:W30,charSpacing:5});
     }
-    function addSectionLabel(s,txt,x,y,w){
-      s.addText(txt.toUpperCase(),{x,y,w,h:.22,fontSize:6.5,bold:true,color:ACC,charSpacing:4});
+    function divider(s,x,y,w){
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:.02,fill:{color:LINE},line:{color:LINE}});
     }
-    function addDivider(s,x,y,w){
-      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h:.025,fill:{color:LINE},line:{color:LINE}});
+    function logo(s,x,y){
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w:.38,h:.34,fill:{color:ACC},line:{color:ACC}});
+      s.addText("+",{x,y,w:.38,h:.34,fontSize:14,bold:true,color:WW,align:"center",valign:"middle"});
+      s.addText("MARKA",{x:x+.44,y:y+.04,w:1,h:.26,fontSize:13,bold:true,color:WW});
     }
 
-    // ── AGRUPAR ACTIVACIONES ──
+    // ── DATOS ──
     const actsMap={};
     FIL.forEach(r=>{
-      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}|${r.hora}`;
       if(!actsMap[k])actsMap[k]={
-        fecha:r.fecha,supervisor:r.supervisor,marca:r.marca,local:r.local,
-        tipo:r.tipo,tematica:r.tematica,
-        adultos:r.adultos,ninos:r.ninos,hora:r.hora,
-        prods:{},fotos:[]
+        fecha:r.fecha,supervisor:r.supervisor,hora:r.hora||"",
+        marca:r.marca,local:r.local,tipo:r.tipo,tematica:r.tematica,
+        adultos:r.adultos,ninos:r.ninos,prods:{},fotos:[]
       };
-      if(r.producto&&r.cantidad>0){
+      if(r.producto&&r.cantidad>0)
         actsMap[k].prods[r.producto]=(actsMap[k].prods[r.producto]||0)+r.cantidad;
-      }
       if(r.evidencia&&r.evidencia.startsWith("http")&&!actsMap[k].fotos.includes(r.evidencia))
         actsMap[k].fotos.push(r.evidencia);
     });
@@ -552,146 +555,221 @@ async function genPPT(){
     const tiposU=[...new Set(acts.map(a=>a.tipo))];
     const mesAnio=new Date().toLocaleString("es-PY",{month:"long",year:"numeric"}).toUpperCase();
 
-    // ════════════════════════════════
+    // ════════════════════════════
     // SLIDE 1 — PORTADA
-    // por cada marca única del filtro
-    // ════════════════════════════════
-    const s0=pres.addSlide();
-    addBase(s0);
-    addLogo(s0,.22,.22);
-    // Línea decorativa roja debajo del logo
-    s0.addShape(pres.shapes.RECTANGLE,{x:.22,y:.72,w:1.4,h:.05,fill:{color:ACC},line:{color:ACC}});
-    // Marca grande
+    // ════════════════════════════
+    const s0=pres.addSlide();base(s0);
+    logo(s0,.22,.24);
+    // Línea gris bajo logo
+    s0.addShape(pres.shapes.RECTANGLE,{x:.22,y:.7,w:1.2,h:.025,fill:{color:W30},line:{color:W30}});
+    // Marca
     const mTit=marcasU.join(" · ").toUpperCase();
-    s0.addText(mTit,{
-      x:.22,y:.95,w:9.4,h:.95,
-      fontSize:mTit.length>25?28:36,bold:true,color:WW,
-    });
-    // Tipo de activación
+    s0.addText(mTit,{x:.22,y:.88,w:9.4,h:.9,fontSize:mTit.length>20?28:36,bold:true,color:WW});
+    // Tipo
     s0.addText(tiposU.join(" & ").toUpperCase(),{
-      x:.22,y:1.96,w:9,h:.38,fontSize:12,bold:false,color:GG,charSpacing:1
+      x:.22,y:1.85,w:9,h:.36,fontSize:11,color:W80,charSpacing:.5
     });
     // Fecha
-    s0.addText(mesAnio,{x:.22,y:2.44,w:9,h:.3,fontSize:10,italic:true,color:GD});
-    addFooter(s0);
+    s0.addText(mesAnio,{x:.22,y:2.3,w:9,h:.28,fontSize:9.5,italic:true,color:W50});
+    // Línea decorativa horizontal
+    s0.addShape(pres.shapes.RECTANGLE,{x:.22,y:2.74,w:.8,h:.025,fill:{color:ACC},line:{color:ACC}});
+    footer(s0);
 
-    // ════════════════════════════════
-    // POR CADA ACTIVACIÓN: 2 slides
-    // SLIDE A — Detalle + Personas
-    // SLIDE B — Ventas
-    // ════════════════════════════════
+    // ════════════════════════════
+    // SLIDE 2 — RESUMEN KPIs
+    // ════════════════════════════
+    const s1=pres.addSlide();base(s1);
+    secLabel(s1,"Resumen ejecutivo",.22,.16);
+    s1.addText("RESUMEN FINAL DE COBERTURA",{
+      x:.22,y:.34,w:9,h:.42,fontSize:16,bold:true,color:WW,charSpacing:1
+    });
+    divider(s1,.22,.8,9.4);
+
+    // KPIs
+    const aS=new Set(FIL.map(r=>`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`));
+    let nP=0;const pVK=new Set();
+    FIL.forEach(r=>{const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if((r.adultos>0||r.ninos>0)&&!pVK.has(k)){pVK.add(k);nP+=r.adultos+r.ninos;}});
+    const nU=FIL.reduce((s,r)=>s+r.cantidad,0);
+    const nM=new Set(FIL.map(r=>r.marca).filter(Boolean)).size;
+    const nL=new Set(FIL.map(r=>r.local).filter(Boolean)).size;
+
+    const kArr=[
+      {v:String(aS.size),l:"ACTIVACIONES",s:"eventos",col:"3b82f6"},
+      {v:String(nP),     l:"PERSONAS",    s:"abordadas",col:"22c55e"},
+      {v:String(nU),     l:"UNIDADES",    s:"vendidas",col:"f59e0b"},
+      {v:String(nM),     l:"MARCAS",      s:"trabajadas",col:ACC},
+      {v:String(nL),     l:"LOCALES",     s:"puntos de venta",col:"8b5cf6"},
+    ];
+    const kW=1.76, kG=.06;
+    kArr.forEach(([,],i)=>{
+      const x=.22+i*(kW+kG), k=kArr[i];
+      // Card oscura con línea de color arriba
+      s1.addShape(pres.shapes.RECTANGLE,{x,y:.94,w:kW,h:1.55,fill:{color:CARD},line:{color:CARD}});
+      s1.addShape(pres.shapes.RECTANGLE,{x,y:.94,w:kW,h:.06,fill:{color:k.col},line:{color:k.col}});
+      // Número
+      s1.addText(k.v,{x,y:1.04,w:kW,h:.82,fontSize:38,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
+      // Label
+      s1.addText(k.l,{x,y:1.9,w:kW,h:.24,fontSize:7.5,bold:true,color:W80,align:"center",charSpacing:3});
+      // Sub
+      s1.addText(k.s,{x,y:2.15,w:kW,h:.2,fontSize:6.5,color:W50,align:"center"});
+    });
+
+    // Tabla supervisores
+    const bSup={};const sV2=new Set();const pV2=new Set();
+    FIL.forEach(r=>{
+      const s=r.supervisor||"—";if(!bSup[s])bSup[s]={a:0,p:0,u:0};
+      const k=`${r.fecha}|${s}|${r.marca}|${r.local}`;
+      if(!sV2.has(k)){sV2.add(k);bSup[s].a++;}
+      const pk=k+"|p";if((r.adultos>0||r.ninos>0)&&!pV2.has(pk)){pV2.add(pk);bSup[s].p+=r.adultos+r.ninos;}
+      bSup[s].u+=r.cantidad;
+    });
+    const tbl=[[
+      {text:"SUPERVISOR",options:{bold:true,color:WW,fill:{color:LINE},align:"center",fontSize:7.5,charSpacing:2}},
+      {text:"ACTIVACIONES",options:{bold:true,color:WW,fill:{color:LINE},align:"center",fontSize:7.5,charSpacing:2}},
+      {text:"PERSONAS",options:{bold:true,color:WW,fill:{color:LINE},align:"center",fontSize:7.5,charSpacing:2}},
+      {text:"UNIDADES",options:{bold:true,color:WW,fill:{color:LINE},align:"center",fontSize:7.5,charSpacing:2}},
+    ],...Object.entries(bSup).map(([s,d],i)=>{
+      const bg=i%2===0?CARD:BG2;
+      return[
+        {text:s,options:{color:WW,fill:{color:bg},fontSize:9,bold:true}},
+        {text:String(d.a),options:{color:W80,fill:{color:bg},align:"center",fontSize:10,bold:true}},
+        {text:String(d.p),options:{color:W80,fill:{color:bg},align:"center",fontSize:9}},
+        {text:String(d.u),options:{color:W80,fill:{color:bg},align:"center",fontSize:9}},
+      ];
+    })];
+    s1.addTable(tbl,{x:.22,y:2.52,w:9.5,colW:[4.5,1.8,1.8,1.4],fontSize:9,border:{pt:.5,color:LINE}});
+    footer(s1);
+
+    // ════════════════════════════
+    // POR CADA ACTIVACIÓN
+    // ════════════════════════════
     for(const a of acts){
       const prodsArr=Object.entries(a.prods).sort((x,y)=>y[1]-x[1]);
       const totalProd=prodsArr.reduce((s,[,v])=>s+v,0);
-      const totalPers=a.adultos+a.ninos;
+      const totalPers=(a.adultos||0)+(a.ninos||0);
 
-      // ── SLIDE A: Detalle de activación ──
-      const sA=pres.addSlide();
-      addBase(sA);
+      // ── SLIDE PERSONAS ──
+      const sA=pres.addSlide();base(sA);
+      secLabel(sA,"Activación",.22,.16);
+      const localTit=(a.local+(a.hora?" — "+a.hora:"")).toUpperCase();
+      sA.addText(localTit,{x:.22,y:.34,w:8,h:.48,fontSize:18,bold:true,color:WW});
+      sA.addText(a.supervisor+"  ·  "+a.fecha,{x:.22,y:.84,w:7,h:.26,fontSize:8.5,color:W50});
+      // Pills
+      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:1.18,w:2.0,h:.3,fill:{color:CARD3},line:{color:CARD3}});
+      sA.addText(a.marca.toUpperCase(),{x:.22,y:1.18,w:2.0,h:.3,fontSize:8.5,bold:true,color:WW,align:"center",valign:"middle"});
+      sA.addShape(pres.shapes.RECTANGLE,{x:2.28,y:1.18,w:3.8,h:.3,fill:{color:CARD},line:{color:CARD}});
+      sA.addText(a.tipo,{x:2.28,y:1.18,w:3.8,h:.3,fontSize:8,color:W80,align:"center",valign:"middle"});
+      divider(sA,.22,1.58,9.4);
 
-      // Encabezado
-      addSectionLabel(sA,"Activación",0.22,0.18,4);
-      sA.addText(a.local.toUpperCase()+(a.hora?' — '+a.hora:''),{x:.22,y:.38,w:7,h:.48,fontSize:20,bold:true,color:WW});
-      sA.addText(`${a.supervisor}  ·  ${a.fecha}`,{x:.22,y:.88,w:7,h:.28,fontSize:9,color:GD});
-      // Marca pill
-      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:1.24,w:2.2,h:.3,fill:{color:ACC},line:{color:ACC}});
-      sA.addText(a.marca.toUpperCase(),{x:.22,y:1.24,w:2.2,h:.3,fontSize:9,bold:true,color:WW,align:"center",valign:"middle"});
-      // Tipo pill
-      sA.addShape(pres.shapes.RECTANGLE,{x:2.5,y:1.24,w:3.5,h:.3,fill:{color:CARD2},line:{color:LINE}});
-      sA.addText(a.tipo.toUpperCase(),{x:2.5,y:1.24,w:3.5,h:.3,fontSize:8.5,color:GG,align:"center",valign:"middle"});
+      secLabel(sA,"Personas abordadas",.22,1.68);
 
-      addDivider(sA,.22,1.66,9.4);
-
-      // ── PERSONAS ──
-      addSectionLabel(sA,"Personas abordadas",.22,1.76,4);
-
-      const vAdultos = a.adultos || 0;
-      const vNinos   = a.ninos   || 0;
-
-      // 2 cajas grandes centradas
-      const cW=4.4, cH=1.7, gap=.3, startX=.22;
-      const cajas=[{l:"ADULTOS",v:vAdultos},{l:"NIÑOS",v:vNinos}];
-      cajas.forEach((p,i)=>{
-        const x=startX+i*(cW+gap);
-        sA.addShape(pres.shapes.RECTANGLE,{x,y:2.0,w:cW,h:cH,fill:{color:CARD},line:{color:i===0?ACC:LINE,pt:i===0?1.5:.5}});
-        sA.addText(String(p.v),{x,y:2.05,w:cW,h:1.05,fontSize:64,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
-        sA.addShape(pres.shapes.RECTANGLE,{x,y:3.0,w:cW,h:.38,fill:{color:i===0?ACC:CARD2},line:{color:i===0?ACC:CARD2}});
-        sA.addText(p.l,{x,y:3.0,w:cW,h:.38,fontSize:9,bold:true,color:WW,align:"center",valign:"middle",charSpacing:4});
+      // 2 CARDS GRANDES — estilo referencia
+      const cards=[{l:"ADULTOS",v:a.adultos||0,col:"3b82f6"},{l:"NIÑOS",v:a.ninos||0,col:"22c55e"}];
+      const cW=4.52,cH=1.72,cGap=.28;
+      cards.forEach((c,i)=>{
+        const x=.22+i*(cW+cGap);
+        // Card base
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:1.9,w:cW,h:cH,fill:{color:CARD},line:{color:CARD}});
+        // Línea de color arriba
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:1.9,w:cW,h:.07,fill:{color:c.col},line:{color:c.col}});
+        // Número
+        sA.addText(String(c.v),{x,y:1.96,w:cW,h:1.08,fontSize:68,bold:true,color:WW,align:"center",valign:"middle",fontFace:"Arial Black"});
+        // Label
+        sA.addShape(pres.shapes.RECTANGLE,{x,y:3.44,w:cW,h:.34,fill:{color:CARD2},line:{color:CARD2}});
+        sA.addText(c.l,{x,y:3.44,w:cW,h:.34,fontSize:8.5,bold:true,color:W80,align:"center",valign:"middle",charSpacing:4});
       });
-      // TOTAL barra completa
-      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:3.5,w:9.4,h:.36,fill:{color:"111111"},line:{color:LINE,pt:.5}});
-      sA.addText("TOTAL ABORDADOS",{x:.22,y:3.5,w:6,h:.36,fontSize:9,color:GG,valign:"middle",charSpacing:2,bold:true});
-      sA.addText(String(totalPers),{x:6.5,y:3.5,w:3.1,h:.36,fontSize:14,bold:true,color:ACC,align:"right",valign:"middle",fontFace:"Arial Black"});
 
-      // ── TEMÁTICA ──
-      addDivider(sA,.22,3.9,9.4);
-      addSectionLabel(sA,"Temática",.22,3.98,2);
-      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:4.22,w:9.4,h:.5,fill:{color:CARD},line:{color:LINE,pt:.5}});
-      sA.addText(a.tematica||a.tipo,{x:.3,y:4.22,w:9.2,h:.5,fontSize:9.5,color:GG,valign:"middle"});
-      addFooter(sA);
+      // TOTAL
+      sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:3.88,w:9.32,h:.36,fill:{color:CARD2},line:{color:LINE,pt:.5}});
+      sA.addText("TOTAL ABORDADOS",{x:.3,y:3.88,w:6,h:.36,fontSize:8.5,color:W50,valign:"middle",charSpacing:3,bold:true});
+      sA.addText(String(totalPers),{x:6.6,y:3.88,w:2.9,h:.36,fontSize:16,bold:true,color:WW,align:"right",valign:"middle",fontFace:"Arial Black"});
 
-      // ── SLIDE B: Ventas concretadas ──
+      // TEMÁTICA
+      divider(sA,.22,4.34,9.4);
+      secLabel(sA,"Temática",.22,4.44);
+      sA.addText(a.tematica||a.tipo,{x:.22,y:4.64,w:9.4,h:.36,fontSize:8.5,color:W80,valign:"middle"});
+      footer(sA);
+
+      // ── SLIDE VENTAS ──
       if(prodsArr.length>0){
-        const sV=pres.addSlide();
-        addBase(sV);
+        const sV=pres.addSlide();base(sV);
+        secLabel(sV,"Ventas concretadas",.22,.16);
+        sV.addText("PRODUCTOS VENDIDOS",{x:.22,y:.34,w:7,h:.44,fontSize:18,bold:true,color:WW});
+        sV.addText(a.marca+" · "+a.local+" · "+a.fecha,{x:.22,y:.8,w:7,h:.24,fontSize:8.5,color:W50});
+        divider(sV,.22,1.12,9.4);
 
-        // Encabezado
-        addSectionLabel(sV,"Ventas concretadas",.22,.18,5);
-        sV.addText("PRODUCTOS VENDIDOS",{x:.22,y:.38,w:7,h:.46,fontSize:20,bold:true,color:WW});
-        sV.addText(`${a.marca}  ·  ${a.local}  ·  ${a.fecha}`,{x:.22,y:.86,w:7,h:.26,fontSize:9,color:GD});
+        // Total box — gris, no rojo
+        sV.addShape(pres.shapes.RECTANGLE,{x:7.9,y:.2,w:1.86,h:.9,fill:{color:CARD},line:{color:CARD}});
+        sV.addShape(pres.shapes.RECTANGLE,{x:7.9,y:.2,w:1.86,h:.06,fill:{color:"f59e0b"},line:{color:"f59e0b"}});
+        sV.addText(String(totalProd),{x:7.9,y:.26,w:1.86,h:.52,fontSize:36,bold:true,color:WW,align:"center",fontFace:"Arial Black"});
+        sV.addText("TOTAL",{x:7.9,y:.8,w:1.86,h:.2,fontSize:6.5,color:W50,align:"center",charSpacing:4,bold:true});
 
-        // Total grande a la derecha
-        sV.addShape(pres.shapes.RECTANGLE,{x:7.8,y:.18,w:1.96,h:1.0,fill:{color:CARD},line:{color:ACC,pt:1.5}});
-        sV.addText(String(totalProd),{x:7.8,y:.22,w:1.96,h:.58,fontSize:42,bold:true,color:ACC,align:"center",fontFace:"Arial Black"});
-        sV.addText("TOTAL",{x:7.8,y:.84,w:1.96,h:.22,fontSize:7,color:GD,align:"center",charSpacing:4,bold:true});
-
-        addDivider(sV,.22,1.22,9.4);
-
-        // Lista de productos — tabla limpia
+        // Lista de productos — tabla limpia estilo referencia
         const maxRows=Math.min(prodsArr.length,10);
-        const rowH=.38,startY=1.32,maxBar=6.0;
-        const maxVal=Math.max(...prodsArr.map(p=>p[1]),1);
+        const rH=.34, sY=1.22, maxBW=5.2;
+        const maxV=Math.max(...prodsArr.map(p=>p[1]),1);
 
         prodsArr.slice(0,maxRows).forEach(([prod,cant],i)=>{
-          const y=startY+i*(rowH+.04);
-          const bg=i%2===0?CARD:BG;
-          const pct=cant/maxVal;
-
+          const y=sY+i*(rH+.03);
+          const bg=i%2===0?CARD:BG2;
+          const pct=cant/maxV;
+          const bw=Math.max(pct*maxBW,.05);
           // Fondo fila
-          sV.addShape(pres.shapes.RECTANGLE,{x:.22,y,w:9.4,h:rowH,fill:{color:bg},line:{color:bg}});
-          // Número de orden
-          sV.addText(String(i+1).padStart(2,"0"),{x:.28,y,w:.4,h:rowH,fontSize:8,color:GD,valign:"middle",align:"right"});
+          sV.addShape(pres.shapes.RECTANGLE,{x:.22,y,w:9.4,h:rH,fill:{color:bg},line:{color:bg}});
+          // Número orden
+          sV.addText(String(i+1).padStart(2,"0"),{x:.28,y,w:.38,h:rH,fontSize:7.5,color:W30,valign:"middle",align:"right"});
           // Nombre producto
-          sV.addText(prod,{x:.76,y,w:5.2,h:rowH,fontSize:10,color:WW,valign:"middle",bold:i===0});
-          // Barra proporcional
-          const bw=Math.max(pct*2.2,.05);
-          sV.addShape(pres.shapes.RECTANGLE,{x:6.1,y:y+.08,w:bw,h:rowH-.16,fill:{color:i===0?ACC:CARD2},line:{color:i===0?ACC:CARD2}});
+          sV.addText(prod,{x:.72,y,w:4.8,h:rH,fontSize:9.5,color:WW,valign:"middle",bold:i===0});
+          // Barra gris con intensidad proporcional
+          const barCol=i===0?"8b5cf6":CARD3;
+          sV.addShape(pres.shapes.RECTANGLE,{x:5.7,y:y+.07,w:bw,h:rH-.14,fill:{color:barCol},line:{color:barCol}});
           // Cantidad
-          sV.addText(String(cant),{x:8.42,y,w:.9,h:rowH,fontSize:11,bold:true,color:i===0?ACC:WW,valign:"middle",align:"right"});
-          // Unidad
-          sV.addText("und.",{x:9.32,y,w:.5,h:rowH,fontSize:7.5,color:GD,valign:"middle"});
+          sV.addText(String(cant),{x:8.52,y,w:.7,h:rH,fontSize:11,bold:true,color:i===0?WW:W80,valign:"middle",align:"right"});
+          sV.addText("und.",{x:9.22,y,w:.4,h:rH,fontSize:7,color:W30,valign:"middle"});
         });
-
-        addFooter(sV);
+        footer(sV);
       }
     }
 
-    // ════════════════════════════════
-    // SLIDE CIERRE
-    // ════════════════════════════════
-    const sC=pres.addSlide();
-    addBase(sC);
-    addLogo(sC,.22,.22);
-    sC.addShape(pres.shapes.RECTANGLE,{x:.22,y:.72,w:1.4,h:.05,fill:{color:ACC},line:{color:ACC}});
-    sC.addText("MUCHAS GRACIAS",{x:.22,y:1.05,w:9.4,h:1.1,fontSize:50,bold:true,color:WW});
-    sC.addText("Hacemos que tu marca sea +",{x:.22,y:2.25,w:9.4,h:.48,fontSize:16,italic:true,color:GG});
-    sC.addText("Trade Marketing  ·  Paraguay",{x:.22,y:4.62,w:9.4,h:.3,fontSize:9,italic:true,color:GD});
-    addFooter(sC);
+    // ════════════════════════════
+    // EVIDENCIAS
+    // ════════════════════════════
+    const todasF=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
+    const seenF=new Set();
+    const fotosU=todasF.filter(r=>{if(seenF.has(r.evidencia))return false;seenF.add(r.evidencia);return true;});
+    for(let i=0;i<fotosU.length;i+=3){
+      const lote=fotosU.slice(i,i+3);
+      const sF=pres.addSlide();base(sF);
+      secLabel(sF,"Evidencia fotográfica",.22,.16);
+      sF.addText("EVIDENCIA FOTOGRÁFICA",{x:.22,y:.34,w:9,h:.42,fontSize:16,bold:true,color:WW});
+      divider(sF,.22,.82,9.4);
+      const fW=(9.4-(lote.length-1)*.18)/lote.length;
+      lote.forEach((r,j)=>{
+        const x=.22+j*(fW+.18);
+        sF.addShape(pres.shapes.RECTANGLE,{x,y:.94,w:fW,h:3.9,fill:{color:CARD},line:{color:LINE,pt:.5}});
+        sF.addText("📷",{x,y:2.2,w:fW,h:.5,fontSize:22,align:"center"});
+        sF.addText(r.marca+"
+"+r.local+" · "+r.fecha,{x,y:4.38,w:fW,h:.46,fontSize:7,color:W50,align:"center"});
+      });
+      footer(sF);
+    }
+
+    // ════════════════════════════
+    // CIERRE
+    // ════════════════════════════
+    const sC=pres.addSlide();base(sC);
+    logo(sC,.22,.24);
+    sC.addShape(pres.shapes.RECTANGLE,{x:.22,y:.7,w:1.2,h:.025,fill:{color:W30},line:{color:W30}});
+    sC.addText("MUCHAS GRACIAS",{x:.22,y:1.0,w:9.4,h:1.1,fontSize:50,bold:true,color:WW});
+    sC.addText("Hacemos que tu marca sea +",{x:.22,y:2.2,w:9.4,h:.46,fontSize:15,italic:true,color:W50});
+    sC.addText("Trade Marketing  ·  Paraguay",{x:.22,y:4.66,w:9.4,h:.28,fontSize:8.5,italic:true,color:W30});
+    footer(sC);
 
     // ── GUARDAR ──
     const fecha=new Date().toLocaleDateString("es-PY").replace(/\//g,"-");
-    const nombre=(marcasU[0]||"MARKA").replace(/\s+/g,"_");
-    await pres.writeFile({fileName:`${nombre}_Activaciones_${fecha}.pptx`});
+    const nom=(marcasU[0]||"MARKA").replace(/\s+/g,"_");
+    await pres.writeFile({fileName:`${nom}_Activaciones_${fecha}.pptx`});
     tst("✓ PPT descargado","ok");
   }catch(e){
     console.error(e);tst("Error: "+e.message,"er2");
