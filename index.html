@@ -607,6 +607,36 @@ tbody td { padding: 8px 12px; vertical-align: middle; color: var(--txt-primary);
 .toast.on { opacity: 1; transform: translateY(0); }
 .toast.ok { background: #16a34a; }
 .toast.er2 { background: var(--red); }
+
+/* Light mode override */
+body.light-mode {
+  --bg-base:     #f0f2f5;
+  --bg-surface:  #ffffff;
+  --bg-card:     #ffffff;
+  --bg-card-hover: #f8f9fb;
+  --bg-sidebar:  #1a2235;
+  --bg-input:    #f0f2f5;
+  --border:      rgba(0,0,0,.08);
+  --border-act:  rgba(0,0,0,.15);
+  --txt-primary:   #1a2235;
+  --txt-secondary: #4a5568;
+  --txt-muted:     #9aa0ab;
+}
+body.light-mode .toggle {
+  background: #d1d5db;
+}
+body.light-mode .toggle::after {
+  right: auto;
+  left: 2px;
+}
+body.light-mode thead tr {
+  background: #f0f2f5;
+}
+body.light-mode thead th {
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+</style>
+<style>
 </style>
 </head>
 <body>
@@ -650,7 +680,6 @@ tbody td { padding: 8px 12px; vertical-align: middle; color: var(--txt-primary);
   </nav>
 
   <div class="sidebar-client">
-    <div class="sc-label">Cliente</div>
     <div class="sc-name">+MARKA</div>
     <div class="sc-sub">Tablero de Activaciones</div>
   </div>
@@ -667,9 +696,9 @@ tbody td { padding: 8px 12px; vertical-align: middle; color: var(--txt-primary);
         <div class="sync-dot ld" id="sd"></div>
         <span id="st">conectando...</span>
       </div>
-      <div class="dm-switch" title="Dark Mode activo">
-        <span>Nocturno</span>
-        <div class="toggle"></div>
+      <div class="dm-switch" id="dmSwitch" onclick="toggleDM()" title="Alternar modo">
+        <span id="dmLabel">Nocturno</span>
+        <div class="toggle" id="dmToggle"></div>
       </div>
       <button class="btn btn-ghost" onclick="load(true)">↻ Actualizar</button>
       <button class="btn btn-red" id="btnP" onclick="genPPT()">⬇ Exportar PPT</button>
@@ -785,6 +814,24 @@ tbody td { padding: 8px 12px; vertical-align: middle; color: var(--txt-primary);
 
 
 <script>
+
+// Dark/Light mode toggle
+function toggleDM(){
+  document.body.classList.toggle("light-mode");
+  const isLight = document.body.classList.contains("light-mode");
+  document.getElementById("dmLabel").textContent = isLight ? "Diurno" : "Nocturno";
+  localStorage.setItem("dm","light-mode");
+  if(!isLight) localStorage.removeItem("dm");
+}
+// Restaurar modo guardado
+if(localStorage.getItem("dm")==="light-mode"){
+  document.body.classList.add("light-mode");
+  document.addEventListener("DOMContentLoaded",()=>{
+    const lbl=document.getElementById("dmLabel");
+    if(lbl)lbl.textContent="Diurno";
+  });
+}
+
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrxhCIcbGcYn4xDNM_mQ8KWWHTeQExR46BzeEDyBrtNkknpAL4zLLncv8yH-YxQPm7lH71f5oUYgcm/pub?output=csv";
 let RAW=[],FIL=[],CH={},TAB=0;
