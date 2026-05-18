@@ -613,15 +613,25 @@ async function genPPT(){
       const pk=k+"|p";if((r.adultos>0||r.ninos>0)&&!pV2.has(pk)){pV2.add(pk);bSup[s].p+=r.adultos+r.ninos;}
       bSup[s].u+=r.cantidad;
     });
+    // Tabla por MARCA en vez de supervisor
+    const bMarca={};
+    FIL.forEach(r=>{
+      const m=r.marca||"—";if(!bMarca[m])bMarca[m]={a:0,p:0,u:0,locales:new Set()};
+      const k=`${r.fecha}|${r.supervisor}|${r.marca}|${r.local}`;
+      if(!sV2.has(k)){sV2.add(k);bMarca[m].a++;}
+      const pk2=k+"|p2";if((r.adultos>0||r.ninos>0)&&!pV2.has(pk2)){pV2.add(pk2);bMarca[m].p+=r.adultos+r.ninos;}
+      bMarca[m].u+=r.cantidad;
+      if(r.local)bMarca[m].locales.add(r.local);
+    });
     const tbl=[[
-      {text:"SUPERVISOR",options:{bold:true,color:WW,fill:{color:W20},align:"center",fontSize:7.5,charSpacing:2}},
+      {text:"MARCA",options:{bold:true,color:WW,fill:{color:W20},align:"center",fontSize:7.5,charSpacing:2}},
       {text:"ACTIVACIONES",options:{bold:true,color:WW,fill:{color:W20},align:"center",fontSize:7.5,charSpacing:2}},
       {text:"PERSONAS",options:{bold:true,color:WW,fill:{color:W20},align:"center",fontSize:7.5,charSpacing:2}},
       {text:"UNIDADES",options:{bold:true,color:WW,fill:{color:W20},align:"center",fontSize:7.5,charSpacing:2}},
-    ],...Object.entries(bSup).map(([s,d],i)=>{
+    ],...Object.entries(bMarca).map(([m,d],i)=>{
       const bg=i%2===0?CARD:BG2;
       return[
-        {text:s,options:{color:WW,fill:{color:bg},fontSize:9,bold:true}},
+        {text:m,options:{color:WW,fill:{color:bg},fontSize:9,bold:true}},
         {text:String(d.a),options:{color:W70,fill:{color:bg},align:"center",fontSize:10,bold:true}},
         {text:String(d.p),options:{color:W70,fill:{color:bg},align:"center",fontSize:9}},
         {text:String(d.u),options:{color:W70,fill:{color:bg},align:"center",fontSize:9}},
@@ -641,7 +651,7 @@ async function genPPT(){
       redLabel(sA,"Activación",.22,.16);
       const localTit=(a.local+(a.hora?" — "+a.hora:"")).toUpperCase();
       sA.addText(localTit,{x:.22,y:.34,w:8.5,h:.48,fontSize:18,bold:true,color:WW});
-      sA.addText(a.supervisor+"  ·  "+a.fecha,{x:.22,y:.84,w:7,h:.24,fontSize:8.5,color:W40});
+      sA.addText(a.fecha,{x:.22,y:.84,w:7,h:.24,fontSize:8.5,color:W40});
 
       // Pill MARCA rojo + pill TIPO gris — igual imagen 1
       sA.addShape(pres.shapes.RECTANGLE,{x:.22,y:1.16,w:2.2,h:.32,fill:{color:ACC},line:{color:ACC}});
@@ -679,7 +689,7 @@ async function genPPT(){
         const sV=pres.addSlide();base(sV);
         redLabel(sV,"Ventas concretadas",.22,.16);
         sV.addText("PRODUCTOS VENDIDOS",{x:.22,y:.34,w:7.2,h:.44,fontSize:20,bold:true,color:WW});
-        sV.addText(a.marca+" - "+a.local+" - "+a.fecha,{x:.22,y:.8,w:7,h:.24,fontSize:8.5,color:W40});
+        sV.addText(a.local+" - "+a.fecha,{x:.22,y:.8,w:7,h:.24,fontSize:8.5,color:W40});
 
         // Caja total — arriba derecha igual imagen 2
         sV.addShape(pres.shapes.RECTANGLE,{x:7.9,y:.16,w:1.86,h:.9,fill:{color:CARD},line:{color:LINE,pt:.5}});
@@ -705,7 +715,7 @@ async function genPPT(){
           // Nombre
           sV.addText(prod,{x:.72,y,w:4.6,h:rH,fontSize:10,color:WW,valign:"middle",bold:i===0});
           // Barra — ROJA para todos (igual imagen 2)
-          sV.addShape(pres.shapes.RECTANGLE,{x:5.5,y:y+.08,w:bw,h:rH-.16,fill:{color:ACC},line:{color:ACC}});
+          const barColor=i===0?'4a4a4a':'383838';sV.addShape(pres.shapes.RECTANGLE,{x:5.5,y:y+.08,w:bw,h:rH-.16,fill:{color:barColor},line:{color:barColor}});
           // Cantidad
           sV.addText(String(cant),{x:8.5,y,w:.62,h:rH,fontSize:12,bold:true,color:WW,valign:"middle",align:"right"});
           sV.addText("und.",{x:9.14,y,w:.46,h:rH,fontSize:7.5,color:W40,valign:"middle"});
