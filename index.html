@@ -1017,31 +1017,62 @@ function rT(){
   </tr>`).join("");
 }
 
+// Extrae el ID de cualquier URL de Drive
+function driveId(url){
+  const m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) return m[1];
+  // formato alternativo: id=XXXX
+  const m2=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return m2?m2[1]:null;
+}
+
 function rF(){
   const grid=document.getElementById("fgEl");
   const cF=FIL.filter(r=>r.evidencia&&r.evidencia.startsWith("http"));
-  const seen=new Set();const unicas=cF.filter(r=>{if(seen.has(r.evidencia))return false;seen.add(r.evidencia);return true;});
+  const seen=new Set();
+  const unicas=cF.filter(r=>{
+    if(seen.has(r.evidencia))return false;
+    seen.add(r.evidencia);return true;
+  });
   document.getElementById("fCnt").textContent=unicas.length+" fotos";
-  if(!unicas.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📷</div><p>Sin evidencias</p></div>`;return;}
+  if(!unicas.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <div class="empty-ico">📷</div><p>Sin evidencias</p></div>`;
+    return;
+  }
   grid.innerHTML=unicas.map(r=>{
-    const m=r.evidencia.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    const prev=m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`:r.evidencia;
-    return`<div class="foto-card" onclick="mfO('${r.evidencia}')" title="Click para ver foto completa">
-      <img src="${prev}" onerror="this.style.display='none'" loading="lazy">
-      <div class="foto-cap"><strong>${es(r.marca)}</strong>${es(r.local)} · ${es(r.fecha)}</div>
+    const id=driveId(r.evidencia);
+    // Usar lh3.googleusercontent.com que permite cross-origin mejor que drive thumbnail
+    const prev=id
+      ? `https://drive.google.com/thumbnail?id=${id}&sz=w600`
+      : r.evidencia;
+    const openUrl=id
+      ? `https://drive.google.com/file/d/${id}/view`
+      : r.evidencia;
+    return`<div class="foto-card" onclick="mfO('${id||""}','${openUrl}')" title="Ver foto">
+      <img src="${prev}"
+           onerror="this.src='';this.parentElement.querySelector('.foto-placeholder').style.display='flex'"
+           loading="lazy">
+      <div class="foto-placeholder" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--txt-muted);font-size:.75rem">
+        <span style="font-size:1.8rem">🖼️</span>
+        <a href="${openUrl}" target="_blank" style="color:var(--c1);font-weight:700;font-size:.75rem;text-decoration:none">Abrir en Drive</a>
+      </div>
+      <div class="foto-cap"><strong>${es(r.marca)}</strong>${es(r.local)} - ${es(r.fecha)}</div>
     </div>`;
   }).join("");
 }
-function mfO(u){
-  // Para URLs de Drive, abrir en nueva pestaña (evita restricciones de iframe)
-  if(u.includes("drive.google.com/file")){
-    window.open(u,"_blank");
-    return;
-  }
-  // Para thumbnails u otras URLs, mostrar en modal
-  const m=u.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  const src=m?"https://drive.google.com/thumbnail?id="+m[1]+"&sz=w800":u;
-  document.getElementById("mfi").src=src;
+
+function mfO(id, openUrl){
+  if(!id){window.open(openUrl,"_blank");return;}
+  // Intentar mostrar en modal con thumbnail de alta resolución
+  const src=`https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+  const img=document.getElementById("mfi");
+  img.src=src;
+  img.onerror=function(){
+    // Si falla el thumbnail, abrir directo en Drive
+    window.open(openUrl,"_blank");
+    document.getElementById("mfw").classList.remove("on");
+  };
   document.getElementById("mfw").classList.add("on");
 }
 function mfC(e){if(e.target===document.getElementById("mfw"))document.getElementById("mfw").classList.remove("on");}
